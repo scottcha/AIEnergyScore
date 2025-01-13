@@ -1,6 +1,6 @@
-# EnergyStarAI
+# AIEnergyScore
 
-A repository for the AI Energy Star Project, aiming to establish energy efficiency ratings for AI models.
+A repository for the AI Energy Score Project, aiming to establish energy efficiency ratings for AI models.
 
 > [!NOTE]
 > This is still a work in progress.
