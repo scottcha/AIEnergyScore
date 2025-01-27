@@ -1,18 +1,18 @@
-# AIEnergyScore
+# AI Energy Score
 
 A repository for the AI Energy Score Project, aiming to establish energy efficiency ratings for AI models.
 
 > [!NOTE]
 > This is still a work in progress.
 
-
-## Hardware
+## Evaluating a Closed Model
+### Hardware
 
 The Dockerfile provided in this repository is made to be used on NVIDIA H100 GPUs.
 If you would like to run benchmarks on other types of hardware, we invite you to take a look at [these configuration examples](https://github.com/huggingface/optimum-benchmark/tree/energy_star_dev/examples/energy_star) that can be run directly with [Optimum Benchmark](https://github.com/huggingface/optimum-benchmark/tree/energy_star_dev).
 
 
-## Usage
+### Usage
 
 You can build the Docker image with:
 
