@@ -1,16 +1,16 @@
 ![AI Energy Score](/AIEnergyScore_LightBG.png)
+
+> [!NOTE]
+> This is still a work in progress.
+
 A repository for the AI Energy Score Project, aiming to establish energy efficiency ratings for AI models.
 
 ## Key Links
 - [Leaderboard](https://huggingface.co/spaces/AIEnergyScore/Leaderboard)
-- [FAQ] (https://huggingface.github.io/AIEnergyScore/#faq)
-- [Documentation] (https://huggingface.github.io/AIEnergyScore/#documentation)
+- [FAQ](https://huggingface.github.io/AIEnergyScore/#faq)
+- [Documentation](https://huggingface.github.io/AIEnergyScore/#documentation)
 -   - [Evaluating a Closed Model](https://huggingface.github.io/AIEnergyScore/#evaluating-a-closed-model)).
-- [Label Generator] (https://huggingface.co/spaces/AIEnergyScore/Label)
-
-
-> [!NOTE]
-> This is still a work in progress.
+- [Label Generator](https://huggingface.co/spaces/AIEnergyScore/Label)
 
 
 ## FAQ
