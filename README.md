@@ -1,12 +1,11 @@
-# AI Energy Score
-
+![AI Energy Score](/AIEnergyScore_LightBG.png)
 A repository for the AI Energy Score Project, aiming to establish energy efficiency ratings for AI models.
 
 Key Links
-[Leaderboard](https://huggingface.co/spaces/AIEnergyScore/Leaderboard)
-[Evaluating a Closed Model](https://github.com/huggingface/AIEnergyScore/blob/main/README.md#evaluating-a-closed-model).
-FAQ
-Documentation
+- [Leaderboard](https://huggingface.co/spaces/AIEnergyScore/Leaderboard)
+- [Evaluating a Closed Model](https://github.com/huggingface/AIEnergyScore/blob/main/README.md#evaluating-a-closed-model).
+- FAQ
+- Documentation
 
 
 
