@@ -1,20 +1,23 @@
 ![AI Energy Score](/AIEnergyScore_LightBG.png)
 A repository for the AI Energy Score Project, aiming to establish energy efficiency ratings for AI models.
 
-Key Links
+## Key Links
 - [Leaderboard](https://huggingface.co/spaces/AIEnergyScore/Leaderboard)
-- [Evaluating a Closed Model](https://github.com/huggingface/AIEnergyScore/blob/main/README.md#evaluating-a-closed-model).
-- FAQ
-- Documentation
-
+- [FAQ] (https://huggingface.github.io/AIEnergyScore/#faq)
+- [Documentation] (https://huggingface.github.io/AIEnergyScore/#documentation)
+-   - [Evaluating a Closed Model](https://huggingface.github.io/AIEnergyScore/#evaluating-a-closed-model)).
+- [Label Generator] (https://huggingface.co/spaces/AIEnergyScore/Label)
 
 
 > [!NOTE]
 > This is still a work in progress.
+
+
 ## FAQ
 ### What is the goal of this project?
 The goal of AI Energy Score is to establish standardized benchmarks for evaluating the energy efficiency of AI model inference. By focusing on controlled and comparable metrics, by focusing on specific tasks and hardware (e.g., NVIDIA H100 GPUs), we aim to provide actionable insights for researchers, developers, and organizations.
 We hope that the establishment of this easy-to-use and recognizable system can encourage customers to advocate for AI model developers to disclose energy efficiency data. Additionally, we want product developers and end users to easily identify and select the most energy-efficient models for their needs. Furthermore, policymakers and enterprises can use these benchmarks as procurement criteria and a foundation for developing regulatory frameworks. Ultimately, our mission is to drive awareness, encourage transparency, and foster sustainability in AI deployments.
+
 ### What do the star ratings mean?
 The star ratings represent the relative energy efficiency of an AI model for a specific task (and class for Text Generation tasks) on a particular leaderboard (e.g., February 2025). It is important to understand the timing of the leaderboard when interpreting the star rating, as it reflects the model's performance relative to other models evaluated at that time.
 While the numerical GPU Energy (measured in Watt-hours) value remains consistent as long as the hardware, model, and task don't change, the relative star rating is recalibrated every six months. This ensures the ratings stay up-to-date with improvements in energy efficiency across the AI landscape.
@@ -26,8 +29,10 @@ This system makes it easier for users to quickly compare models and choose those
 ### Why are you focused only on inference?
 The methodology for calculating energy consumption during training is generally well understood, as it typically involves discreet and measurable computation (verifying training energy consumption, however, is challenging because it often depends on trusting data provided by the AI model developers).
 Inference energy consumption, on the other hand, presents a much more complex challenge. It is influenced by a wide range of variables such as hardware configurations, model optimizations, deployment scenarios, and usage patterns. These complexities make inference energy harder to measure and compare reliably. By focusing on inference, we aim to address this gap and establish standardized benchmarks that can bring more clarity and comparability to this critical aspect of AI model deployment.
+
 ### What about performance?
 While the AI Energy Score primarily focuses on energy efficiency, model performance is not overlooked. Users are encouraged to consider energy efficiency alongside key performance metrics, such as throughput, accuracy, and latency, to make balanced decisions when selecting models. By providing a clear and transparent efficiency rating, the AI Energy Score enables stakeholders to weigh these factors effectively based on their specific requirements.
+
 ### Given that there are many variables that affect AI model inference efficiency, what steps have you taken to ensure comparability?
 To ensure comparability, we have taken several steps to control key variables that impact AI model inference efficiency. These include:
 - Standardized Task: Uniform datasets for each task ensure that we are verifying comparable, real-world performance.
@@ -36,6 +41,7 @@ To ensure comparability, we have taken several steps to control key variables th
 - Consistent Configuration: Models are tested using their default configurations, mimicking realistic production scenarios.
 - Controlled Batching: We use the same batching strategies across tests to ensure consistency in workload management.
 By standardizing these factors, we have attempted to create a controlled environment that allows for fair and reliable comparisons of energy efficiency across different AI models.
+
 ### How does the AI Energy Score account for hardware differences?
 The AI Energy Score standardizes evaluations by conducting all benchmarks on NVIDIA H100 GPUs, ensuring consistent hardware conditions across all tested models. This approach allows for "apples-to-apples" comparisons by isolating GPU energy consumption under equivalent scenarios. While the score primarily focuses on results from the H100 hardware, users who wish to benchmark on different hardware can use the configuration examples and instructions provided in the associated Optimum Benchmark repository.
 However, it’s important to note that results obtained on alternative hardware may not align directly with the standardized GPU-specific metrics used in this study. To ensure clarity, benchmarks performed on different hardware are not included in the official leaderboard but can serve as valuable insights for internal comparisons or research purposes.
@@ -63,6 +69,7 @@ Future iterations aim to expand this list to include emerging tasks and modaliti
 The AI Energy Score builds on existing initiatives like MLPerf, Zeus, and Ecologits by focusing solely on standardized energy efficiency benchmarking for AI inference. Unlike MLPerf, which prioritizes performance with optional energy metrics, or Zeus and Ecologits, which may be limited by open-source constraints or estimation methods, the AI Energy Score provides a unified framework that evaluates both open-source and proprietary models consistently.
 With a simple, transparent rating system and a public leaderboard, it enables clear model comparisons, filling critical gaps in scalability and applicability left by other projects.
 
+## Documentation
 
 ## Evaluating a Closed Model
 ### Hardware
