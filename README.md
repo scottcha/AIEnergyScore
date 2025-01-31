@@ -1,9 +1,9 @@
 ![AI Energy Score](/AIEnergyScore_LightBG.png)
 
+Welcome to AI Energy Score! This is an initiative to establish comparable energy efficiency ratings for AI models, helping the industry make informed decisions about sustainability in AI development.
+
 > [!NOTE]
 > This is still a work in progress.
-
-A repository for the AI Energy Score Project, aiming to establish energy efficiency ratings for AI models.
 
 ## Key Links
 - [Leaderboard](https://huggingface.co/spaces/AIEnergyScore/Leaderboard)
