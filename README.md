@@ -9,7 +9,7 @@ Welcome to AI Energy Score! This is an initiative to establish comparable energy
 - [Leaderboard](https://huggingface.co/spaces/AIEnergyScore/Leaderboard)
 - [FAQ](https://huggingface.github.io/AIEnergyScore/#faq)
 - [Documentation](https://huggingface.github.io/AIEnergyScore/#documentation)
--   - [Evaluating a Closed Model](https://huggingface.github.io/AIEnergyScore/#evaluating-a-closed-model)).
+   - [Evaluating Proprietary Models](https://huggingface.github.io/AIEnergyScore/#evaluating-a-closed-model)
 - [Label Generator](https://huggingface.co/spaces/AIEnergyScore/Label)
 
 
