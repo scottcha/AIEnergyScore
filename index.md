@@ -1,3 +1,8 @@
+<nav>
+  <a href="https://huggingface.co/spaces/AIEnergyScore/Leaderboard">Leaderboard</a> |
+  <a href="https://huggingface.github.io/AIEnergyScore/#faq">FAQ</a> |
+  <a href="https://huggingface.github.io/AIEnergyScore/#documentation">Documentation</a>
+</nav>
 ![AI Energy Score](/AIEnergyScore_LightBG.png)
 
 Welcome to AI Energy Score! This is an initiative to establish comparable energy efficiency ratings for AI models, helping the industry make informed decisions about sustainability in AI development.
