@@ -36,7 +36,8 @@
 
 <nav>
   <a href="https://huggingface.co/spaces/AIEnergyScore/Leaderboard">Leaderboard</a>
-   <a href="https://huggingface.co/spaces/AIEnergyScore/submission_portal">Submission Portal</a>
+  <a href="https://huggingface.co/spaces/AIEnergyScore/submission_portal">Submission Portal</a>
+  <a href="https://huggingface.co/spaces/AIEnergyScore/README/discussions">Community</a>
   <a href="https://huggingface.github.io/AIEnergyScore/#faq">FAQ</a>
   <a href="https://huggingface.github.io/AIEnergyScore/#documentation">Documentation</a>
 </nav>
