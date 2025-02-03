@@ -1,8 +1,90 @@
 <nav>
+  <ul>
+    <li><a href="{{ '/' | relative_url }}">Home</a></li>
+    <li><a href="{{ '/about/' | relative_url }}">About</a></li>
+    <li><a href="{{ '/contact/' | relative_url }}">Contact</a></li>
+  </ul>
+</nav>
+Option 3: Using a Jekyll _config.yml Navigation
+If using a Jekyll theme, define navigation in _config.yml:
+
+yml
+Copy
+Edit
+navigation:
+  - title: Home
+    url: /
+  - title: About
+    url: /about/
+  - title: Contact
+    url: /contact/
+Then, render it in _layouts/default.html:
+
+html
+Copy
+Edit
+<nav>
+  {% for item in site.navigation %}
+    <a href="{{ item.url | relative_url }}">{{ item.title }}</a>
+  {% endfor %}
+</nav>
+Option 4: Using a Jekyll Theme (Minimal Mistakes, Just the Docs)
+If using a Jekyll theme like Minimal Mistakes or Just the Docs, navigation can be handled via _config.yml.
+
+Would you like help setting up a theme or custom styling for the navbar?
+
+
+
+
+
+
+You said:
+I'm using option 1.  How do I format the links to spread them across the top evenly, make them black, bigger font.  Also is there a way to remove the github repo name from the very top of the site? current code <nav>
   <a href="https://huggingface.co/spaces/AIEnergyScore/Leaderboard">Leaderboard</a> |
   <a href="https://huggingface.github.io/AIEnergyScore/#faq">FAQ</a> |
   <a href="https://huggingface.github.io/AIEnergyScore/#documentation">Documentation</a>
 </nav>
+![AI Energy Score](/AIEnergyScore_LightBG.png)
+ChatGPT said:
+ChatGPT
+To style your navigation links so they are spread evenly across the top, black, and have a bigger font, you can add inline CSS within the Markdown file.
+
+Updated Code with Styling
+md
+Copy
+Edit
+<style>
+  nav {
+    display: flex;
+    justify-content: center; /* Centers the links */
+    gap: 40px; /* Adds space between links */
+    background-color: white; /* Background color if needed */
+    padding: 10px 0; /* Padding for spacing */
+  }
+
+  nav a {
+    text-decoration: none; /* Removes underline */
+    color: black; /* Makes links black */
+    font-size: 20px; /* Increases font size */
+    font-weight: bold; /* Optional: makes text bold */
+  }
+
+  nav a:hover {
+    text-decoration: underline; /* Underlines on hover */
+  }
+
+  body > header {
+    display: none; /* Hides GitHub repo name */
+  }
+</style>
+
+<nav>
+  <a href="https://huggingface.co/spaces/AIEnergyScore/Leaderboard">Leaderboard</a>
+  <a href="https://huggingface.github.io/AIEnergyScore/#faq">FAQ</a>
+  <a href="https://huggingface.github.io/AIEnergyScore/#documentation">Documentation</a>
+</nav>
+
+
 ![AI Energy Score](/AIEnergyScore_LightBG.png)
 
 Welcome to AI Energy Score! This is an initiative to establish comparable energy efficiency ratings for AI models, helping the industry make informed decisions about sustainability in AI development.
