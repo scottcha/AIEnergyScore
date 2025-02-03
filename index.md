@@ -18,13 +18,25 @@
     text-decoration: underline; /* Underlines on hover */
   }
 
-  body > header {
-    display: none; /* Hides GitHub repo name */
+  /* Hide the GitHub Pages banner */
+  body > header, 
+  .brand, 
+  .site-header, 
+  .page-header, 
+  .github-pages-metadata { 
+    display: none !important; 
+  }
+
+  /* If it's inside a div with class container, also try */
+  .container-lg > div:first-child {
+    display: none !important;
   }
 </style>
 
+
 <nav>
   <a href="https://huggingface.co/spaces/AIEnergyScore/Leaderboard">Leaderboard</a>
+   <a href="https://huggingface.co/spaces/AIEnergyScore/submission_portal">Submission Portal</a>
   <a href="https://huggingface.github.io/AIEnergyScore/#faq">FAQ</a>
   <a href="https://huggingface.github.io/AIEnergyScore/#documentation">Documentation</a>
 </nav>
