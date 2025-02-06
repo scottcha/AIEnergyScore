@@ -33,6 +33,9 @@
   }
 </style>
 
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
 
 <nav>
   <a href="https://huggingface.co/spaces/AIEnergyScore/Leaderboard">Leaderboard</a>
@@ -260,9 +263,9 @@ To ensure comparability, models evaluated for the Text Generation task are separ
 
 This was determined using the following formula ([source](https://aiproduct.engineer/tutorials/how-much-gpu-memory-is-required-for-running-the-model))**[^1]**:
 
-$$
+\[
 M(GB) = \left( \frac{P \times B}{\frac{32}{Q}} \right) \times \text{Overhead}
-$$
+\]
 
 ### Where:
 - **M(GB)**: Total GPU memory in gigabytes (e.g., 80GB or 24GB).
