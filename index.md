@@ -380,19 +380,20 @@ All benchmarking results are transparently shared via a public [leaderboard](htt
 
 ## Transparency and Guidelines for Label Use
 
-The outcomes of the AI Energy Score analysis can be shared through a uniform label. The label includes the model’s name, GPU energy score, task, scoring date, benchmarking hardware, visual star rating, and link to the leaderboard for verification purposes. Following submission and leaderboard update, the [label generator tool](https://huggingface.co/spaces/AIEnergyScore/Label) can be used to easily create and download a label. These labels serve as an accessible representation of a model's energy performance. Note the label specifications in the image below.
+The outcomes of the AI Energy Score analysis can be shared through a uniform label. The label includes the model’s name, GPU energy score, task, scoring date, benchmarking hardware, visual star rating, and link to the leaderboard for verification purposes. Following submission and leaderboard update, the [label generator tool](https://huggingface.co/spaces/AIEnergyScore/Label) can be used to easily create and download a label. The intended display dimension of the label is 260x364 pixels. Note the additional label specifications in the image below.
 
 **Label Specs**
-<div style="display: flex; justify-content: center; align-items: center; gap: 20px;">
-    <img src="[specs.png](https://raw.githubusercontent.com/huggingface/AIEnergyScore/refs/heads/main/Label%20Specs.png)" alt="AI Energy Score Label Specs" width="400">
+<div style="display: flex; justify-content: center; align-items: center; gap: 5px;">
+    <img src="https://raw.githubusercontent.com/huggingface/AIEnergyScore/main/Label%20Specs.png" alt="AI Energy Score Label Specs" width="550">
 </div>
+
 
 **Sample Label**
-<div style="display: flex; justify-content: center; align-items: center; gap: 20px;">
-    <img src="[specs.png](https://raw.githubusercontent.com/huggingface/AIEnergyScore/refs/heads/main/Example.png)" alt="AI Energy Score Sample Label" width="400">
+<div style="display: flex; justify-content: center; align-items: center; gap: 5px;">
+    <img src="https://raw.githubusercontent.com/huggingface/AIEnergyScore/main/Example.png" alt="AI Energy Score Sample Label" width="364">
 </div>
 
-To promote transparency and responsible disclosure, we encourage stakeholders to include AI Energy Score labels in technical reports, announcement blogs, model cards, and other relevant documentation. See [here] (https://raw.githubusercontent.com/huggingface/AIEnergyScore/refs/heads/main/Example1.jpg) and [here] (https://raw.githubusercontent.com/huggingface/AIEnergyScore/refs/heads/main/Example2.jpg) for visual mock-ups of examples (note that the card in the example does not include actual data). By sharing energy efficiency ratings widely, we aim to foster a culture of accountability and sustainability in AI development. 
+To promote transparency and responsible disclosure, we encourage stakeholders to include AI Energy Score labels in technical reports, announcement blogs, model cards, and other relevant documentation. See [here](https://raw.githubusercontent.com/huggingface/AIEnergyScore/refs/heads/main/Example1.jpg) and [here](https://raw.githubusercontent.com/huggingface/AIEnergyScore/refs/heads/main/Example2.jpg) for visual mock-ups of examples (note that the card in the example does not include actual data). By sharing energy efficiency ratings widely, we aim to foster a culture of accountability and sustainability in AI development. 
 
 Additionally, standalone relative star ratings (or similar) can be used in external applications, such as within other benchmarks, leaderboards, or software applications, to denote relative efficiency. However, we require a link back to the main leaderboard to explain the nuance of the rating system.
 
