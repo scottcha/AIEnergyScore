@@ -1,3 +1,8 @@
+<script type="text/javascript" async
+  src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js"></script>
+
 <style>
   nav {
     display: flex;
@@ -32,10 +37,6 @@
     display: none !important;
   }
 </style>
-
-<script type="text/javascript" async
-  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML">
-</script>
 
 <nav>
   <a href="https://huggingface.co/spaces/AIEnergyScore/Leaderboard">Leaderboard</a>
@@ -251,7 +252,6 @@ The resulting datasets are available on the [AI Energy Score organization page](
 
 To ensure comparability, models evaluated for the Text Generation task are separated into 3 classes, depending on the type and number of GPUs required, as summarized in Table 2\. Star ratings are created separately for each model class.
 
-##### 
 
 ##### Table 2
 
@@ -263,9 +263,10 @@ To ensure comparability, models evaluated for the Text Generation task are separ
 
 This was determined using the following formula ([source](https://aiproduct.engineer/tutorials/how-much-gpu-memory-is-required-for-running-the-model))**[^1]**:
 
-\[
+$$
 M(GB) = \left( \frac{P \times B}{\frac{32}{Q}} \right) \times \text{Overhead}
-\]
+$$
+
 
 ### Where:
 - **M(GB)**: Total GPU memory in gigabytes (e.g., 80GB or 24GB).
@@ -279,7 +280,11 @@ M(GB) = \left( \frac{P \times B}{\frac{32}{Q}} \right) \times \text{Overhead}
 
 Experiments are conducted on a cluster equipped with NVIDIA H100 GPUs (with 80GB memory). 
 
-**![][image2]![][image3]**
+<div style="display: flex; justify-content: center; align-items: center; gap: 20px;">
+    <img src="https://raw.githubusercontent.com/huggingface/optimum-benchmark/main/logo.png" alt="Optimum Benchmark Logo" width="400">
+    <img src="https://codecarbon.io/assets/img/code-carbon-logo-08-black-01.svg" alt="Code Carbon Logo" width="400">
+</div>
+
 
 We utilize the [Optimum Benchmark package](https://github.com/huggingface/optimum-benchmark) to perform the benchmark, and track energy consumption with [CodeCarbon](https://mlco2.github.io/codecarbon/). CodeCarbon enables the monitoring of energy usage across all hardware components, including the CPU, GPU, and RAM, during inference. Specifically, CodeCarbon leverages the NVIDIA System Management Interface ([nvidia-smi](https://docs.nvidia.com/deploy/nvidia-smi/index.html)), a command-line utility, to measure GPU energy consumption. Furthermore, it provides a detailed breakdown of energy contributions from individual steps such as preprocess, prefill, and decode.
 
@@ -391,19 +396,19 @@ Energy efficiency scores provide valuable insights that can guide decision-makin
 
 Every role in the AI ecosystem has a part to play in driving adoption of AI Energy Score. Adoption strategies should focus on embedding energy transparency into phases of AI development, deployment, and governance. The following measures outline key actions for different stakeholders.
 
-## Model Developers
+**Model Developers**
 
 AI researchers and developers are central to driving innovation. By incorporating sustainability considerations into the entire life cycle—from development to deployment—they can minimize environmental impacts from the outset. A key step is making energy reporting a standard practice. Developers can achieve this by including energy metrics in documentation, such as \\textit{model cards} that detail training data, performance evaluations, and metadata. Encouraging transparency and public disclosure will foster accountability and help establish sustainability as a norm in AI development.
 
-## Enterprises and Product Managers
+**Enterprises and Product Managers**
 
 As decision-makers in the AI value chain, enterprises and other creators of products that incorporate AI have a key role in promoting energy transparency. Through procurement policies that prioritize low-energy models, organizations can influence market behavior. For example, they could require AI solutions to meet specific benchmarks, such as achieving a minimum energy-efficiency rating under an AI Energy Score framework. In addition, businesses can support the adoption of industry-wide sustainability standards and advocate for regulatory measures to ensure long-term progress.
 
-## End Users
+**End Users**
 
 End users interact with AI technologies in applications and play an active role in signaling demand for sustainable options. Users can send a strong signal by preferring products with environmental transparency, and by selecting more sustainable options, thereby reinforcing industry accountability and driving better practices.
 
-## Policymakers
+**Policymakers**
 
 Policymakers hold the authority to embed sustainability into AI systems through regulations and governance. Ongoing initiatives, such as the European Union’s AI transparency legislation, illustrate the growing push toward accountability. Policymakers can begin with voluntary energy transparency frameworks, gradually evolving them into mandatory regulations that prioritize energy efficiency. Independent regulatory bodies may also be established to monitor energy consumption trends and ensure compliance with evolving global standards.
 
@@ -437,6 +442,11 @@ Therefore, to estimate total inference energy, the GPU energy use must be increa
 
 **Total inference energy** \= (GPU \+ CPU \+ RAM \+ Networking \+ Storage) × PUE
 
+$$
+Total Inference Energy = (E_{\text{GPU}} + E_{\text{CPU}} + E_{\text{RAM}} + E_{\text{Networking}} + E_{\text{Storage}}) \times \text{PUE}
+$$
+
+
 ## Carbon Emissions
 
 After estimating total energy usage, greenhouse gas (GHG) emissions (aka carbon emissions) can be also estimated, facilitating integration into corporate carbon footprint disclosures, aligned with the GHG Protocol, for ESG reporting. Carbon emissions depend on the **data center location** and its grid's carbon intensity, which can be found via sources like [ElectricityMaps](https://electricitymaps.com). The grid carbon factor (in grams of CO₂e per kWh) can be multiplied by the total energy (in kWh) to determine the CO₂e.
@@ -464,22 +474,15 @@ Besides carbon emissions and water usage, energy data can be used to estimate ad
 
 As described by [Ecologits](https://ecologits.ai/latest/methodology/llm_inference/#modeling-request-usage-environmental-impacts:~:text=centers%20or%20supercomputers.-,Modeling%20request%20usage%20environmental%20impacts,-To%20assess%20the) ADPe and PE factors depend on specific locations and electricity mixes.
 
-We multiply the estimated electricity consumption by the impact factor of the electricity mix, $F_{\text{em}}$, specific to the target country and time. **Unless otherwise stated, we currently use a worldwide average multicriteria impact factor from the [ADEME Base Empreinte®](https://base-empreinte.ademe.fr/)**:
+Source: [ADEME Base Empreinte®](https://base-empreinte.ademe.fr/):
 
-$$
-I^\text{u}_{\text{request}} = E_{\text{request}} \times F_{\text{em}}.
-$$
-
-Note that the user can still chose another electricity mix from the [ADEME Base Empreinte®](https://base-empreinte.ademe.fr/).
-
-??? note "Some values of $F_{\text{em}}$ per geographical area"
-| Area or country | GWP (gCO2eq / kWh) | ADPe (kgSbeq / kWh) | PE (MJ / kWh) |
-|---------------------------------------------------------------------------|--------------------|---------------------|---------------|
-| 🌐 Worldwide | $590.4$ | $7.378 \times 10^{-8}$ | $9.99$ |
-| 🇪🇺 Europe ([EEA](https://en.wikipedia.org/wiki/European_Economic_Area)) | $509.4$ | $6.423 \times 10^{-8}$ | $12.9$ |
-| 🇺🇸 USA | $679.8$ | $9.855 \times 10^{-8}$ | $11.4$ |
-| 🇨🇳 China | $1,057$ | $8.515 \times 10^{-8}$ | $14.1$ |
-| 🇫🇷 France | $81.3$ | $4.858 \times 10^{-8}$ | $11.3$ |
+| Area or country | ADPe (kgSbeq / kWh) | PE (MJ / kWh) |
+|---------------------------------------------------------------------------|---------------------|---------------|
+| 🌐 Worldwide | $7.378 \times 10^{-8}$ | $9.99$ |
+| 🇪🇺 Europe ([EEA](https://en.wikipedia.org/wiki/European_Economic_Area)) | $6.423 \times 10^{-8}$ | $12.9$ |
+| 🇺🇸 USA | $9.855 \times 10^{-8}$ | $11.4$ |
+| 🇨🇳 China | $8.515 \times 10^{-8}$ | $14.1$ |
+| 🇫🇷 France | $4.858 \times 10^{-8}$ | $11.3$ |
 
 ## Embodied Impacts
 
@@ -497,7 +500,7 @@ The AI Energy Score leaderboard will continue to be updated on a biannual basis,
 
 To drive meaningful adoption, the AI Energy Score must align with broader sustainability goals and regulatory frameworks. Collaborating with policymakers will be a priority, with the aim of integrating energy efficiency standards into AI governance policies. These collaborations could include providing recommendations for energy thresholds in AI applications or contributing to the creation of mandatory reporting standards for AI energy consumption.
 
-#### **Expanding Tasks**
+### **Expanding Tasks**
 
 As AI applications continue to diversify, it is critical to ensure that the AI Energy Score remains relevant across emerging domains. Future iterations may include additional tasks, such as reasoning, multimodal applications, and video generation. By broadening the scope of tasks, we aim to capture a more comprehensive picture of AI's energy efficiency across diverse use cases.
 
