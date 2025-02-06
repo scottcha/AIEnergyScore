@@ -1,2 +1,5 @@
 name: AI Energy Score
 title: null
+markdown: kramdown
+kramdown:
+  math_engine: mathjax
