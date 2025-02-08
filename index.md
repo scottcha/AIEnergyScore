@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -65,15 +64,10 @@
 
         /* Image Title Styling */
         .image-title {
-            position: absolute;
-            top: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(255, 255, 255, 0.8); /* Light background for readability */
-            padding: 5px 12px;
+            text-align: center;
             font-weight: bold;
             font-size: 18px;
-            border-radius: 5px; /* Rounded corners for better aesthetics */
+            margin-bottom: 10px; /* Space between title and image */
         }
 
         /* Additional Spacing After Second Image */
@@ -461,8 +455,7 @@ The outcomes of the AI Energy Score analysis can be shared through a uniform lab
          alt="AI Energy Score Sample Label" width="364">
 </div>
 
-</body>
-</html>
+
 
 
 
