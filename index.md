@@ -47,7 +47,7 @@
 </nav>
 
 <div style="margin-top: 0px;">
-    <img src="/AIEnergyScore_LightBG.png" 
+    <img src="/logo.png" 
          alt="AI Energy Score" 
          style="display: block; margin: 0 auto; max-width: 300px; height: auto;">
 </div>
