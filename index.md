@@ -15,7 +15,7 @@
   nav a {
     text-decoration: none; /* Removes underline */
     color: black; /* Makes links black */
-    font-size: 20px; /* Increases font size */
+    font-size: 16px; /* Increases font size */
     font-weight: bold; /* Optional: makes text bold */
   }
 
@@ -46,11 +46,10 @@
   <a href="https://huggingface.github.io/AIEnergyScore/#documentation">Documentation</a>
 </nav>
 
-<div style="margin-top: 0px;">
-    <img src="/logo.png" 
-         alt="AI Energy Score" 
-         style="display: block; margin: 0 auto; max-width: 300px; height: auto;">
-</div>
+<p align="center">
+  <img src="/logo.png" alt="AI Energy Score" width="300">
+</p>
+
 
 Welcome to AI Energy Score! This is an initiative to establish comparable energy efficiency ratings for AI models, helping the industry make informed decisions about sustainability in AI development.
 
