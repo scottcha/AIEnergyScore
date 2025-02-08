@@ -61,11 +61,12 @@ Welcome to AI Energy Score! This is an initiative to establish comparable energy
 - [What is the goal of this project?](https://huggingface.github.io/AIEnergyScore/#what-is-the-goal-of-this-project)  
 - [What do the star ratings mean?](https://huggingface.github.io/AIEnergyScore/#what-do-the-star-ratings-mean)  
 - [What about performance?](https://huggingface.github.io/AIEnergyScore/#what-about-performance)  
-- [Given that there are many variables that affect AI model inference efficiency, what steps have you taken to ensure comparability?](https://huggingface.github.io/AIEnergyScore/#given-that-there-are-many-variables-that-affect-ai-model-inference-efficiency-what-steps-have-you-taken-to-ensure-comparability)  
+- [What steps have you taken to ensure comparability?](https://huggingface.github.io/AIEnergyScore/#what-steps-have-you-taken-to-ensure-comparability)  
 - [How does the AI Energy Score account for hardware differences?](https://huggingface.github.io/AIEnergyScore/#how-does-the-ai-energy-score-account-for-hardware-differences)  
 - [What is the timeline for updates?](https://huggingface.github.io/AIEnergyScore/#what-is-the-timeline-for-updates)  
 - [Why include proprietary (closed-source) models?](https://huggingface.github.io/AIEnergyScore/#why-include-proprietary-closed-source-models)  
-- [How are proprietary model ratings verified?](https://huggingface.github.io/AIEnergyScore/#how-are-proprietary-model-ratings-verified)  
+- [How are proprietary model ratings verified?](https://huggingface.github.io/AIEnergyScore/#how-are-proprietary-model-ratings-verified)
+- [What can an enterprise do to drive adoption of this work?](https://huggingface.github.io/AIEnergyScore/#What-can-an-enterprise-do-to-drive-adoption-of-this-work)
 - [Is this data public?](https://huggingface.github.io/AIEnergyScore/#is-this-data-public)  
 - [What is the rationale for selecting the initial set of tasks?](https://huggingface.github.io/AIEnergyScore/#what-is-the-rationale-for-selecting-the-initial-set-of-tasks)  
 - [How is this different from existing projects?](https://huggingface.github.io/AIEnergyScore/#how-is-this-different-from-existing-projects)  
@@ -107,7 +108,7 @@ Inference energy consumption, on the other hand, presents a much more complex ch
 
 While the AI Energy Score primarily focuses on energy efficiency, model performance is not overlooked. Users are encouraged to consider energy efficiency alongside key performance metrics, such as throughput, accuracy, and latency, to make balanced decisions when selecting models. By providing a clear and transparent efficiency rating, the AI Energy Score enables stakeholders to weigh these factors effectively based on their specific requirements.
 
-### **Given that there are many variables that affect AI model inference efficiency, what steps have you taken to ensure comparability?**
+### **What steps have you taken to ensure comparability?**
 
 To ensure comparability, we have taken several steps to control key variables that impact AI model inference efficiency. These include:
 
@@ -143,6 +144,36 @@ Proprietary model ratings are verified through a process designed to ensure inte
 
 This attestation ensures that submitted results are accurate, reproducible, and aligned with the project’s benchmarking standards.
 
+### What can an enterprise do to drive adoption of this work?
+Enterprises play a crucial role in promoting transparency and sustainability of AI. Whether procuring AI for internal operations or external products, companies can drive adoption by encouraging AI developers and vendors to disclose energy efficiency metrics. One practical approach is incorporating energy transparency requirements into RFPs, tenders, and procurement processes, asking vendors to provide AI Energy Scores as part of their submissions. 
+
+***Example RFP Question***:
+> As part of our commitment to sustainability and transparency, we ask vendors to disclose the energy efficiency of AI models and systems provided under this RFP. Please provide the AI Energy Score (or an equivalent industry-standard energy efficiency rating) for each AI model or system proposed. If an AI Energy Score is not available, provide the following details:
+> * Estimated energy consumption (in kWh) for typical workloads.
+> * Carbon footprint per inference/training session.
+> * Any energy optimization techniques used in model training and inference.
+> * Certifications, benchmarks, or third-party validation related to energy efficiency.
+> Vendors that can demonstrate a commitment to minimizing AI-related energy consumption and carbon footprint will be prioritized in our evaluation process.  
+
+
+***Example Procurement Contract Requirements***:
+> Clause: AI Energy Efficiency & Disclosure
+> 
+> * Energy Transparency: The Supplier agrees to provide an AI Energy Score (or an equivalent recognized standard) for all AI models delivered under this contract. If the AI Energy Score is not available, the Supplier shall disclose detailed energy consumption metrics, including but not limited to power usage, carbon emissions per unit of AI processing, and energy-saving measures implemented.
+> * Sustainability Commitment: The Supplier shall make commercially reasonable efforts to improve the energy efficiency of AI models provided under this Agreement and implement optimizations to reduce energy consumption without compromising performance.
+> * Ongoing Reporting: The Supplier shall, upon request, provide updated AI Energy Scores or equivalent benchmarks for AI models used in ongoing services under this Agreement. If the Supplier makes material changes to the energy efficiency of any AI system provided, they shall notify the Buyer and offer an updated version where feasible.
+> * Compliance & Penalties: Failure to provide required energy efficiency disclosures or a material deviation from the disclosed AI Energy Score may be considered a breach of contract, subject to corrective measures, renegotiation of terms, or penalties as determined by the Buyer.
+> 
+> This requirement aligns with our organization's sustainability goals and ensures that vendors contribute to reducing the environmental impact of AI deployments.
+
+Additionally, enterprises can:
+* Set internal sustainability benchmarks that prioritize energy-efficient AI solutions.
+* Advocate for regulatory policies that incentivize disclosure and accountability.
+* Educate internal teams on the importance of AI energy efficiency and support research efforts that improve measurement methodologies.
+  
+By taking these steps, enterprises can accelerate industry-wide adoption of energy-efficient AI practices while aligning with broader sustainability goals.
+
+
 ### **Is this data public?**
 
 Yes, the benchmarking results are made publicly available via the AI Energy Score leaderboard hosted on Hugging Face. However, strict guidelines are in place to ensure that sensitive data from proprietary models remains confidential. Only aggregate metrics and anonymized results are shared, ensuring privacy while promoting transparency.
@@ -160,8 +191,6 @@ Future iterations aim to expand this list to include emerging tasks and modaliti
 The AI Energy Score builds on existing initiatives like MLPerf, Zeus, and Ecologits by focusing solely on standardized energy efficiency benchmarking for AI inference. Unlike MLPerf, which prioritizes performance with optional energy metrics, or Zeus and Ecologits, which may be limited by open-source constraints or estimation methods, the AI Energy Score provides a unified framework that evaluates both open-source and proprietary models consistently.
 
 With a simple, transparent rating system and a public leaderboard, it enables clear model comparisons, filling critical gaps in scalability and applicability left by other projects.
-
-[^1]:  Assumes FP16 precision (due to widespread usage in LLM inference). Each parameter in FP16 occupies 2 bytes. Assumes 20% overhead for framework and other memory requirements. Numbers have been rounded down.
 
 
 # Documentation 
@@ -263,7 +292,7 @@ To ensure comparability, models evaluated for the Text Generation task are separ
 | B | Single Cloud GPU | NVIDIA H100 | 80 | 66 |
 | C | Multiple Cloud GPUs | NVIDIA H100 | \>80 | \>66 |
 
-This was determined using the following formula ([source](https://aiproduct.engineer/tutorials/how-much-gpu-memory-is-required-for-running-the-model))**[^1]**:
+This was determined using the following formula ([source](https://aiproduct.engineer/tutorials/how-much-gpu-memory-is-required-for-running-the-model)):
 
 $$
 M(GB) = \left( \frac{P \times B}{\frac{32}{Q}} \right) \times \text{Overhead}
@@ -277,6 +306,7 @@ $$
 - **Q**: Quantization bit level (16 bits for FP16, so \( Q = 16 \)).
 - **Overhead**: Multiplier to account for additional memory requirements (e.g., 20% overhead becomes 1.2).
 
+> Assumes FP16 precision (due to widespread usage in LLM inference). Each parameter in FP16 occupies 2 bytes. Assumes 20% overhead for framework and other memory requirements. Numbers have been rounded down.
 
 ## Experimental Setup
 
