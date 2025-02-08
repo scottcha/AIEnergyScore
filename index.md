@@ -47,7 +47,7 @@
 </nav>
 
 <p align="center">
-  <img src="/logo.png" alt="AI Energy Score" width="300">
+  <img src="https://raw.githubusercontent.com/huggingface/AIEnergyScore/refs/heads/main/logo.png" alt="AI Energy Score" width="300">
 </p>
 
 
@@ -58,6 +58,133 @@ Welcome to AI Energy Score! This is an initiative to establish comparable energy
 - [Documentation](https://huggingface.github.io/AIEnergyScore/#documentation)
 
 # FAQ
+<section id="faq">
+  <h2>FAQ</h2>
+
+  <details>
+    <summary><strong>What is the goal of this project?</strong></summary>
+    <p>The goal of AI Energy Score is to establish a standardized approach for evaluating the energy efficiency of AI model inference. By focusing on controlled and comparable metrics, such as specific tasks and hardware, we aim to provide useful insights for researchers, developers, organizations, and policymakers. The term 'AI' is broad and not universally defined, so by specifying 10 common tasks, we also aim to bring more clarity to this space and establish a more structured framework for evaluation.</p>
+    <p>We hope that this easy-to-use and recognizable system will empower users to advocate for greater transparency from AI model developers in disclosing energy efficiency data. Additionally, we want product developers and end users to easily identify and select the most energy-efficient models for their needs.</p>
+    <p>Beyond individual adoption, enterprises can use these benchmarks as procurement criteria. We also hope that this approach serves as inspiration for policy makers as they develop regulatory frameworks. Ultimately, our mission is to drive awareness, encourage transparency, and promote AI sustainability.</p>
+  </details>
+
+  <details>
+    <summary><strong>What do the star ratings mean?</strong></summary>
+    <p>The star ratings represent the relative energy efficiency of an AI model for a specific task (and class for Text Generation tasks) on a particular leaderboard (e.g., February 2025).</p>
+    <ul>
+      <li><strong>5 Stars:</strong> most energy efficient models relative to other models evaluated for this task.</li>
+      <li><strong>1 Star:</strong> least energy efficient models relative to other models evaluated for this task.</li>
+    </ul>
+    <p>Note: Models evaluated for the Text Generation task are split into 3 classes depending on model size. Scoring is done within this specific class, but models for the entire task are displayed together in the leaderboard.</p>
+    <p>The ratings are calculated by dividing the GPU energy range for a specific task into five equal sections (20% intervals) and ranking models based on where their GPU energy falls within these bands. The highest 20% of models by GPU energy get 1 star, while the lowest 20% of models get 5 stars, and so on. It is important to understand the timing of the leaderboard when interpreting the star rating, as it reflects the model's performance relative to other models evaluated at that time.</p>
+    <p>While the numerical GPU Energy (measured in Watt-hours) value remains consistent as long as the hardware, model, and task don't change, the relative star rating is recalibrated with every leaderboard update. This ensures the ratings stay up-to-date with improvements in energy efficiency across the AI landscape.</p>
+    <p>The star rating system was chosen for its simplicity and familiarity, and the 5-star range provides sufficient granularity. This system makes it easier for users to quickly compare models and choose those with optimal energy efficiency for their needs.</p>
+  </details>
+
+  <details>
+    <summary><strong>Why are you focused only on inference?</strong></summary>
+    <p>The methodology for calculating energy consumption during training is generally well understood, as it typically involves discreet and measurable computation (verifying training energy consumption, however, is challenging because it often depends on trusting data provided by the AI model developers).</p>
+    <p>Inference energy consumption, on the other hand, presents a much more complex challenge. It is influenced by a wide range of variables such as hardware configurations, model optimizations, deployment scenarios, and usage patterns. These complexities make inference energy harder to measure and compare reliably. By focusing on inference, we aim to address this gap and establish standardized benchmarks that can bring more clarity and comparability to this critical aspect of AI model deployment.</p>
+  </details>
+
+  <details>
+    <summary><strong>What about performance?</strong></summary>
+    <p>While the AI Energy Score primarily focuses on energy efficiency, model performance is not overlooked. Users are encouraged to consider energy efficiency alongside key performance metrics, such as throughput, accuracy, and latency, to make balanced decisions when selecting models. By providing a clear and transparent efficiency rating, the AI Energy Score enables stakeholders to weigh these factors effectively based on their specific requirements.</p>
+  </details>
+
+  <details>
+    <summary><strong>What steps have you taken to ensure comparability?</strong></summary>
+    <p>To ensure comparability, we have taken several steps to control key variables that impact AI model inference efficiency. These include:</p>
+    <ul>
+      <li><strong>Standardized Task:</strong> Uniform datasets for each task ensure that we are verifying comparable, real-world performance.</li>
+      <li><strong>Standardized Hardware:</strong> All benchmarks are conducted exclusively on NVIDIA H100 GPUs, and the score is focused solely on the GPU, eliminating variability introduced by different hardware setups.</li>
+      <li><strong>Energy Focus:</strong> By measuring energy consumption rather than emissions, we avoid discrepancies caused by the carbon intensity of the energy grid at different physical locations.</li>
+      <li><strong>Consistent Configuration:</strong> Models are tested using their default configurations, mimicking realistic production scenarios.</li>
+      <li><strong>Controlled Batching:</strong> We use the same batching strategies across tests to ensure consistency in workload management.</li>
+    </ul>
+    <p>By standardizing these factors, we have attempted to create a controlled environment that allows for fair and reliable comparisons of energy efficiency across different AI models.</p>
+  </details>
+
+  <details>
+    <summary><strong>How does the AI Energy Score account for hardware differences?</strong></summary>
+    <p>The AI Energy Score standardizes evaluations by conducting all benchmarks on NVIDIA H100 GPUs, ensuring consistent hardware conditions across all tested models. This approach allows for "apples-to-apples" comparisons by isolating GPU energy consumption under equivalent scenarios. While the score primarily focuses on results from the H100 hardware, users who wish to benchmark on different hardware can use the configuration examples and instructions provided in the associated Optimum Benchmark repository.</p>
+    <p>However, it’s important to note that results obtained on alternative hardware may not align directly with the standardized GPU-specific metrics used in this study. To ensure clarity, benchmarks performed on different hardware are not included in the official leaderboard but can serve as valuable insights for internal comparisons or research purposes.</p>
+  </details>
+
+  <details>
+    <summary><strong>What is the timeline for updates?</strong></summary>
+    <p>The AI Energy Score leaderboard is updated biannually, approximately every six months. During each update, new models are added, and existing ratings are recalibrated to reflect advancements in the field. This regular update cycle ensures that the leaderboard remains a current and reliable resource for evaluating energy efficiency.</p>
+  </details>
+
+  <details>
+    <summary><strong>Why include proprietary (closed-source) models?</strong></summary>
+    <p>Proprietary models are integral to ensuring that the AI Energy Score provides a comprehensive and representative benchmark. Many industry-leading AI systems are proprietary, and excluding them would leave significant gaps in the evaluation landscape. By incorporating both open-source and proprietary models, the AI Energy Score encourages industry-wide transparency.</p>
+  </details>
+
+  <details>
+    <summary><strong>How are proprietary model ratings verified?</strong></summary>
+    <p>Proprietary model ratings are verified through a process designed to ensure integrity and transparency while respecting confidentiality. When log files are uploaded for evaluation, the uploader must agree to the following attestation, which meets the typical bar for energy efficiency ratings:</p>
+    <ul>
+      <li><strong>Public Data Sharing:</strong> You consent to the public sharing of the energy performance data derived from your submission. No additional information related to this model, including proprietary configurations, will be disclosed.</li>
+      <li><strong>Data Integrity:</strong> You validate that the log files submitted are accurate, unaltered, and generated directly from testing your model as per the specified benchmarking procedures.</li>
+      <li><strong>Model Representation:</strong> You verify that the model tested and submitted is representative of the production-level version of the model, including its level of quantization and any other relevant characteristics impacting energy efficiency and performance.</li>
+    </ul>
+    <p>This attestation ensures that submitted results are accurate, reproducible, and aligned with the project’s benchmarking standards.</p>
+  </details>
+
+  <details>
+    <summary><strong>What can an enterprise do to drive adoption of this work?</strong></summary>
+    <p>Enterprises play a crucial role in promoting transparency and sustainability of AI. Whether procuring AI for internal operations or external products, companies can drive adoption by encouraging AI developers and vendors to disclose energy efficiency metrics. One practical approach is incorporating energy transparency requirements into RFPs, tenders, and procurement processes, asking vendors to provide AI Energy Scores as part of their submissions.</p>
+    <p><strong>Example RFP Question:</strong></p>
+    <blockquote>
+      <p>As part of our commitment to sustainability and transparency, we ask vendors to disclose the energy efficiency of AI models and systems provided under this RFP. Please provide the AI Energy Score (or an equivalent industry-standard energy efficiency rating) for each AI model or system proposed. If an AI Energy Score is not available, provide the following details:</p>
+      <ul>
+        <li>Estimated energy consumption (in kWh) for typical workloads.</li>
+        <li>Carbon footprint per inference/training session.</li>
+        <li>Any energy optimization techniques used in model training and inference.</li>
+        <li>Certifications, benchmarks, or third-party validation related to energy efficiency.</li>
+      </ul>
+      <p>Vendors that can demonstrate a commitment to minimizing AI-related energy consumption and carbon footprint will be prioritized in our evaluation process.</p>
+    </blockquote>
+    <p><strong>Example Procurement Contract Requirements:</strong></p>
+    <blockquote>
+      <p>Clause: AI Energy Efficiency & Disclosure</p>
+      <ul>
+        <li><strong>Energy Transparency:</strong> The Supplier agrees to provide an AI Energy Score (or an equivalent recognized standard) for all AI models delivered under this contract. If the AI Energy Score is not available, the Supplier shall disclose detailed energy consumption metrics, including but not limited to power usage, carbon emissions per unit of AI processing, and energy-saving measures implemented.</li>
+        <li><strong>Sustainability Commitment:</strong> The Supplier shall make commercially reasonable efforts to improve the energy efficiency of AI models provided under this Agreement and implement optimizations to reduce energy consumption without compromising performance.</li>
+        <li><strong>Ongoing Reporting:</strong> The Supplier shall, upon request, provide updated AI Energy Scores or equivalent benchmarks for AI models used in ongoing services under this Agreement. If the Supplier makes material changes to the energy efficiency of any AI system provided, they shall notify the Buyer and offer an updated version where feasible.</li>
+        <li><strong>Compliance & Penalties:</strong> Failure to provide required energy efficiency disclosures or a material deviation from the disclosed AI Energy Score may be considered a breach of contract, subject to corrective measures, renegotiation of terms, or penalties as determined by the Buyer.</li>
+      </ul>
+      <p>This requirement aligns with our organization's sustainability goals and ensures that vendors contribute to reducing the environmental impact of AI deployments.</p>
+    </blockquote>
+    <p>Additionally, enterprises can:</p>
+    <ul>
+      <li>Set internal sustainability benchmarks that prioritize energy-efficient AI solutions.</li>
+      <li>Advocate for regulatory policies that incentivize disclosure and accountability.</li>
+      <li>Educate internal teams on the importance of AI energy efficiency and support research efforts that improve measurement methodologies.</li>
+    </ul>
+    <p>By taking these steps, enterprises can accelerate industry-wide adoption of energy-efficient AI practices while aligning with broader sustainability goals.</p>
+  </details>
+
+  <details>
+    <summary><strong>Is this data public?</strong></summary>
+    <p>Yes, the benchmarking results are made publicly available via the AI Energy Score leaderboard hosted on Hugging Face. However, strict guidelines are in place to ensure that sensitive data from proprietary models remains confidential. Only aggregate metrics and anonymized results are shared, ensuring privacy while promoting transparency.</p>
+  </details>
+
+  <details>
+    <summary><strong>What is the rationale for selecting the initial set of tasks?</strong></summary>
+    <p>The initial set of tasks was chosen to represent a broad spectrum of commonly used machine learning applications across multiple modalities, ensuring relevance and coverage for a wide range of AI models. These tasks include text generation, image classification, object detection, and others, reflecting both the popularity of these tasks and their significance in real-world applications.</p>
+    <p>The selection was guided by data from the Hugging Face Hub, which tracks model downloads in real time, highlighting tasks with the highest demand. Each task corresponds to a pipeline within the Transformers library, facilitating standardized model loading and evaluation. By focusing on well-established and frequently used tasks, the AI Energy Score ensures that its benchmarks are practical, widely applicable, and reflective of current trends in AI development.</p>
+    <p>Future iterations aim to expand this list to include emerging tasks and modalities, maintaining the framework’s relevance as the AI landscape evolves.</p>
+  </details>
+
+  <details>
+    <summary><strong>How is this different from existing projects?</strong></summary>
+    <p>The AI Energy Score builds on existing initiatives like MLPerf, Zeus, and Ecologits by focusing solely on standardized energy efficiency benchmarking for AI inference. Unlike MLPerf, which prioritizes performance with optional energy metrics, or Zeus and Ecologits, which may be limited by open-source constraints or estimation methods, the AI Energy Score provides a unified framework that evaluates both open-source and proprietary models consistently.</p>
+    <p>With a simple, transparent rating system and a public leaderboard, it enables clear model comparisons, filling critical gaps in scalability and applicability left by other projects.</p>
+  </details>
+</section>
+
 - [What is the goal of this project?](https://huggingface.github.io/AIEnergyScore/#what-is-the-goal-of-this-project)  
 - [What do the star ratings mean?](https://huggingface.github.io/AIEnergyScore/#what-do-the-star-ratings-mean)  
 - [What about performance?](https://huggingface.github.io/AIEnergyScore/#what-about-performance)  
