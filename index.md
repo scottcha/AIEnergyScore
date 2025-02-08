@@ -1,42 +1,88 @@
-<script type="text/javascript" async
-  src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-<script type="text/javascript" async
-  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js"></script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Labels</title>
 
-<style>
-  nav {
-    display: flex;
-    justify-content: center; /* Centers the links */
-    gap: 40px; /* Adds space between links */
-    background-color: white; /* Background color if needed */
-    padding: 10px 0; /* Padding for spacing */
-  }
+    <!-- MathJax and Polyfill -->
+    <script type="text/javascript" async
+      src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script type="text/javascript" async
+      src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js"></script>
 
-  nav a {
-    text-decoration: none; /* Removes underline */
-    color: black; /* Makes links black */
-    font-size: 16px; /* Increases font size */
-    font-weight: bold; /* Optional: makes text bold */
-  }
+    <!-- Styles -->
+    <style>
+        /* Navigation Bar */
+        nav {
+            display: flex;
+            justify-content: center; /* Centers links */
+            gap: 40px; /* Space between links */
+            background-color: white; /* Background color */
+            padding: 10px 0; /* Padding */
+        }
 
-  nav a:hover {
-    text-decoration: underline; /* Underlines on hover */
-  }
+        nav a {
+            text-decoration: none; /* Removes underline */
+            color: black; /* Link color */
+            font-size: 16px; /* Font size */
+            font-weight: bold; /* Bold text */
+        }
 
-  /* Hide the GitHub Pages banner */
-  body > header, 
-  .brand, 
-  .site-header, 
-  .page-header, 
-  .github-pages-metadata { 
-    display: none !important; 
-  }
+        nav a:hover {
+            text-decoration: underline; /* Underline on hover */
+        }
 
-  /* If it's inside a div with class container, also try */
-  .container-lg > div:first-child {
-    display: none !important;
-  }
-</style>
+        /* Hide GitHub Pages Banner */
+        body > header, 
+        .brand, 
+        .site-header, 
+        .page-header, 
+        .github-pages-metadata { 
+            display: none !important; 
+        }
+
+        .container-lg > div:first-child {
+            display: none !important;
+        }
+
+        /* Image Container */
+        .image-container {
+            position: relative;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 30px; /* Space after each image */
+        }
+
+        /* Image Styling */
+        .image-container img {
+            display: block;
+            max-width: 100%;
+            height: auto;
+        }
+
+        /* Image Title Styling */
+        .image-title {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.8); /* Light background for readability */
+            padding: 5px 12px;
+            font-weight: bold;
+            font-size: 18px;
+            border-radius: 5px; /* Rounded corners for better aesthetics */
+        }
+
+        /* Additional Spacing After Second Image */
+        .image-container:nth-child(2) {
+            margin-bottom: 50px;
+        }
+    </style>
+</head>
+</html>
 
 <nav>
   <a href="https://huggingface.co/spaces/AIEnergyScore/Leaderboard">Leaderboard</a>
@@ -403,16 +449,22 @@ All benchmarking results are transparently shared via a public [leaderboard](htt
 
 The outcomes of the AI Energy Score analysis can be shared through a uniform label. The label includes the model’s name, GPU energy score, task, scoring date, benchmarking hardware, visual star rating, and link to the leaderboard for verification purposes. Following submission and leaderboard update, the [label generator tool](https://huggingface.co/spaces/AIEnergyScore/Label) can be used to easily create and download a label. The intended display dimension of the label is 260x364 pixels. Note the additional label specifications in the image below.
 
-**Label Specs**
-<div style="display: flex; justify-content: center; align-items: center; gap: 5px;">
-    <img src="https://raw.githubusercontent.com/huggingface/AIEnergyScore/main/Label%20Specs.png" alt="AI Energy Score Label Specs" width="550">
+<div class="image-container">
+    <div class="image-title">Label Specs</div>
+    <img src="https://raw.githubusercontent.com/huggingface/AIEnergyScore/main/Label%20Specs.png" 
+         alt="AI Energy Score Label Specs" width="550">
 </div>
 
-
-**Sample Label**
-<div style="display: flex; justify-content: center; align-items: center; gap: 5px;">
-    <img src="https://raw.githubusercontent.com/huggingface/AIEnergyScore/main/Example.png" alt="AI Energy Score Sample Label" width="364">
+<div class="image-container">
+    <div class="image-title">Sample Label</div>
+    <img src="https://raw.githubusercontent.com/huggingface/AIEnergyScore/main/Example.png" 
+         alt="AI Energy Score Sample Label" width="364">
 </div>
+
+</body>
+</html>
+
+
 
 To promote transparency and responsible disclosure, we encourage stakeholders to include AI Energy Score labels in technical reports, announcement blogs, model cards, and other relevant documentation. See [here](https://raw.githubusercontent.com/huggingface/AIEnergyScore/refs/heads/main/Example1.jpg) and [here](https://raw.githubusercontent.com/huggingface/AIEnergyScore/refs/heads/main/Example2.jpg) for visual mock-ups of examples (note that the card in the example does not include actual data). By sharing energy efficiency ratings widely, we aim to foster a culture of accountability and sustainability in AI development. 
 
