@@ -1,13 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>AI Energy Score Documentation & FAQ</title>
-
-  <script type="text/javascript" async
-    src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-  <script type="text/javascript" async
-    src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js"></script>
+<script type="text/javascript" async
+  src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js"></script>
 
 <style>
   nav {
@@ -28,15 +22,7 @@
   nav a:hover {
     text-decoration: underline; /* Underlines on hover */
   }
-  /* --- Interactive TOC Styles --- */
-    #toc {
-      margin: 20px auto;
-      max-width: 800px;
-      padding: 10px;
-      background: #f9f9f9;
-      border: 1px solid #ddd;
-    }
-  
+
   /* Hide the GitHub Pages banner */
   body > header, 
   .brand, 
@@ -61,7 +47,7 @@
 </nav>
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/huggingface/AIEnergyScore/refs/heads/main/logo.png" alt="AI Energy Score" width="300">
+  <img src="/logo.png" alt="AI Energy Score" width="300">
 </p>
 
 
@@ -340,7 +326,7 @@ Precision refers to the format in which numerical data is stored and processed, 
 
 ### Quantization
 
-Quantization, which also impacts energy efficiency, involves compressing models by reducing the numerical precision of weights and activations, often using integer formats (e.g., INT8). This technique further reduces memory usage and energy consumption, enabling efficient model deployment on resource-constrained hardware. By default, open-source models are evaluated based on the quantization settings provided in their configuration files (e.g., config.json). For proprietary models submitted for evaluation, we expect the quantization settings most representative of production use cases to be employed. This ensures a fair and practical assessment of their energy efficiency. Transparency is a key principle of our methodology; hence, we require submitters to disclose the precision and quantization settings used during evaluation.
+Quantization, which also impacts energy efficiency, involves compressing models by reducing the numerical precision of weights and activations, often using integer formats (e.g., INT8). This technique further reduces memory usage and energy consumption, enabling efficient model deployment on resource-constrained hardware. By default, open-source models are evaluated based on the quantization settings provided in their configuration files (e.g., `config.json`). For proprietary models submitted for evaluation, we expect the quantization settings most representative of production use cases to be employed. This ensures a fair and practical assessment of their energy efficiency. Transparency is a key principle of our methodology; hence, we require submitters to disclose the precision and quantization settings used during evaluation.
 
 ### Batching
 
@@ -389,14 +375,16 @@ If you would like to run benchmarks on other types of hardware, we invite you to
 
 You can build the Docker image with:
 
+```
 docker build -t energy_star .
-
+```
 
 Then you can run your benchmark with:
 
-docker run --gpus all --shm-size 1g energy_star --config-name my_task backend.model=my_model backend.processor=my_processor
-
-where my_task is the name of a task with a configuration [here](https://github.com/huggingface/optimum-benchmark/tree/energy_star_dev/examples/energy_star), my_model is the name of your model that you want to test (which needs to be compatible with either the Transformers or the Diffusers libraries) and my_processor is the name of the tokenizer/processor you want to use. In most cases, backend.model and backend.processor wil lbe identical, except in cases where a model is using another model's tokenizer (e.g. from a LLaMa model).
+```
+docker run --gpus all --shm-size 1g energy_star --config-name my_task backend.model=my_model backend.processor=my_processor 
+```
+where `my_task` is the name of a task with a configuration [here](https://github.com/huggingface/optimum-benchmark/tree/energy_star_dev/examples/energy_star), `my_model` is the name of your model that you want to test (which needs to be compatible with either the Transformers or the Diffusers libraries) and `my_processor` is the name of the tokenizer/processor you want to use. In most cases, `backend.model` and `backend.processor` wil lbe identical, except in cases where a model is using another model's tokenizer (e.g. from a LLaMa model).
 
 The rest of the configuration is explained [here](https://github.com/huggingface/optimum-benchmark/tree/energy_star_dev?tab=readme-ov-file#configuration-overrides-%EF%B8%8F)
 
