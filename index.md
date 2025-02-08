@@ -143,7 +143,7 @@ Welcome to AI Energy Score! This is an initiative to establish comparable energy
   </details>
 
   <details>
-    <summary><strong>How does the AI Energy Score account for hardware differences?</strong></summary>
+    <summary><strong>How does this approach account for hardware differences?</strong></summary>
     <p>The AI Energy Score standardizes evaluations by conducting all benchmarks on NVIDIA H100 GPUs, ensuring consistent hardware conditions across all tested models. This approach allows for "apples-to-apples" comparisons by isolating GPU energy consumption under equivalent scenarios. While the score primarily focuses on results from the H100 hardware, users who wish to benchmark on different hardware can use the configuration examples and instructions provided in the associated Optimum Benchmark repository.</p>
     <p>However, it’s important to note that results obtained on alternative hardware may not align directly with the standardized GPU-specific metrics used in this study. To ensure clarity, benchmarks performed on different hardware are not included in the official leaderboard but can serve as valuable insights for internal comparisons or research purposes.</p>
   </details>
@@ -445,13 +445,13 @@ All benchmarking results are transparently shared via a public [leaderboard](htt
 The outcomes of the AI Energy Score analysis can be shared through a uniform label. The label includes the model’s name, GPU energy score, task, scoring date, benchmarking hardware, visual star rating, and link to the leaderboard for verification purposes. Following submission and leaderboard update, the [label generator tool](https://huggingface.co/spaces/AIEnergyScore/Label) can be used to easily create and download a label. The intended display dimension of the label is 260x364 pixels. Note the additional label specifications in the image below.
 
 <div class="image-container">
-    <div class="image-title">Label Specs</div>
+    <div class="image-title">Label Specs:   </div>
     <img src="https://raw.githubusercontent.com/huggingface/AIEnergyScore/main/Label%20Specs.png" 
          alt="AI Energy Score Label Specs" width="550">
 </div>
 
 <div class="image-container">
-    <div class="image-title">Sample Label</div>
+    <div class="image-title">Sample Label:   </div>
     <img src="https://raw.githubusercontent.com/huggingface/AIEnergyScore/main/Example.png" 
          alt="AI Energy Score Sample Label" width="364">
 </div>
