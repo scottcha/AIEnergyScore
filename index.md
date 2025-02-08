@@ -468,7 +468,7 @@ Additionally, standalone relative star ratings (or similar) can be used in exter
 
 The AI Energy Score leaderboard is updated biannually, approximately every six months. Models can be submitted for evaluation at any time, with results incorporated into the public leaderboard during the next update cycle. Importantly, models that have been previously benchmarked will not undergo the benchmarking process again. Instead, their 5-star rating will be re-analyzed during each leaderboard update to account for the inclusion of new models and ensure the relative accuracy of the rating system. Since the hardware used for benchmarking (NVIDIA H100 GPUs) remains consistent, the GPU energy consumption of previously benchmarked models will simply be re-evaluated to determine their updated star rating. After the leaderboard is updated, models are assigned a new label reflecting their score and the issue date of the evaluation. Labels include a link to the public leaderboard, allowing for real-time verification of results. Prior leaderboards remain accessible for record-keeping purposes.
 
-# Adopting AI Energy Scores
+# Adopting AI Energy Score
 
 Energy efficiency scores provide valuable insights that can guide decision-making in AI development and deployment. By combining these scores with performance metrics (e.g., throughput, accuracy, latency), users can make informed model selection decisions to balance energy efficiency with task requirements. Additionally, integrating these scores into AI-powered products helps end users adopt more sustainable models, often yielding cost reductions alongside environmental benefits. For policymakers, these scores can help guide the writing of new laws and regulations that can incentivize sustainability for AI deployment \- for instance, by stipulating that models used by a certain number of people, or deployed 24/7, have a certain minimal efficiency rating. 
 
@@ -607,4 +607,4 @@ Additionally, we would like to thank:
 * The [Paris Peace Forum](https://parispeaceforum.org/press-releases/sommet-action-ia-50-projets-innovants-selectionnes/) for recognizing the project as one of the 50 “international initiatives that promote the well-being of citizens and the ethical use of artificial intelligence.”  
 * Everyone who reviewed this project and provided feedback.
 
-# 
+ 
