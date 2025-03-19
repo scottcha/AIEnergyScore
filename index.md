@@ -474,19 +474,19 @@ Energy efficiency scores provide valuable insights that can guide decision-makin
 
 Every role in the AI ecosystem has a part to play in driving adoption of AI Energy Score. Adoption strategies should focus on embedding energy transparency into phases of AI development, deployment, and governance. The following measures outline key actions for different stakeholders.
 
-**Model Developers**
+## Model Developers
 
 AI researchers and developers are central to driving innovation. By incorporating sustainability considerations into the entire life cycle—from development to deployment—they can minimize environmental impacts from the outset. A key step is making energy reporting a standard practice. Developers can achieve this by including energy metrics in documentation, such as \\textit{model cards} that detail training data, performance evaluations, and metadata. Encouraging transparency and public disclosure will foster accountability and help establish sustainability as a norm in AI development.
 
-**Enterprises and Product Managers**
+## Enterprises and Product Managers
 
 As decision-makers in the AI value chain, enterprises and AI product creators play a crucial role in promoting energy transparency. By prioritizing low-energy models in procurement policies, organizations can influence market behavior. Key actions include:
 
 - Requiring AI solutions to meet specific energy benchmarks, such as a minimum **AI Energy Score**.
 - Supporting industry-wide sustainability standards and advocating for regulatory measures.
-- Incorporating energy transparency requirements into **RFPs, tenders, and procurement processes**.
+- Incorporating energy transparency requirements into **RFPs, tenders, and procurement processes** (examples included below).
 
-## Example RFP Question
+### Example RFP Question
 
 > As part of our commitment to sustainability and transparency, we ask vendors to disclose the energy efficiency of AI models and systems provided under this RFP.  
 >  
@@ -498,25 +498,25 @@ As decision-makers in the AI value chain, enterprises and AI product creators pl
 >  
 > Vendors demonstrating a commitment to minimizing AI-related energy consumption and carbon footprint will be prioritized in our evaluation process.
 
-## Example Procurement Contract Requirements
+### Example Procurement Contract Requirements
 
-### **Clause: AI Energy Efficiency & Disclosure**
+>#### **Clause: AI Energy Efficiency & Disclosure**
+>
+>- **Energy Transparency**:  
+>  The Supplier agrees to provide an **AI Energy Score** (or an equivalent recognized standard) for all AI models delivered under this contract. If unavailable, the Supplier must disclose energy consumption metrics, including power usage, carbon emissions per AI processing unit, and energy-saving measures.
+>  
+>- **Sustainability Commitment**:  
+>  The Supplier shall make commercially reasonable efforts to **improve the energy efficiency** of AI models and implement optimizations to reduce energy consumption without compromising performance.
+>  
+>- **Ongoing Reporting**:  
+>  The Supplier shall, upon request, provide updated **AI Energy Scores or equivalent benchmarks** for AI models used in ongoing services. If material changes affect energy efficiency, the Supplier must notify the Buyer and offer an updated version where feasible.
+>  
+>- **Compliance & Penalties**:  
+>  Failure to provide required energy efficiency disclosures or a material deviation from the disclosed AI Energy Score (or equivalent) may be considered a breach of contract, subject to **corrective measures, renegotiation of terms, or penalties** as determined by the Buyer.
+>
+>These requirements align with our organization’s sustainability goals and ensure vendors contribute to reducing the environmental impact of AI deployments.
 
-- **Energy Transparency**:  
-  The Supplier agrees to provide an **AI Energy Score** (or an equivalent recognized standard) for all AI models delivered under this contract. If unavailable, the Supplier must disclose energy consumption metrics, including power usage, carbon emissions per AI processing unit, and energy-saving measures.
-  
-- **Sustainability Commitment**:  
-  The Supplier shall make commercially reasonable efforts to **improve the energy efficiency** of AI models and implement optimizations to reduce energy consumption without compromising performance.
-  
-- **Ongoing Reporting**:  
-  The Supplier shall, upon request, provide updated **AI Energy Scores or equivalent benchmarks** for AI models used in ongoing services. If material changes affect energy efficiency, the Supplier must notify the Buyer and offer an updated version where feasible.
-  
-- **Compliance & Penalties**:  
-  Failure to provide required energy efficiency disclosures or a material deviation from the disclosed AI Energy Score may be considered a breach of contract, subject to **corrective measures, renegotiation of terms, or penalties** as determined by the Buyer.
-
-These requirements align with our organization’s sustainability goals and ensure vendors contribute to reducing the environmental impact of AI deployments.
-
-## Additional Enterprise Actions
+### Additional Enterprise Actions
 
 Beyond procurement policies, enterprises can further support energy-efficient AI adoption by:
 
@@ -526,11 +526,11 @@ Beyond procurement policies, enterprises can further support energy-efficient AI
 
 By implementing these measures, enterprises can accelerate industry-wide adoption of energy-efficient AI while aligning with broader sustainability objectives.
 
-**End Users**
+## End Users
 
 End users interact with AI technologies in applications and play an active role in signaling demand for sustainable options. Users can send a strong signal by preferring products with environmental transparency, and by selecting more sustainable options, thereby reinforcing industry accountability and driving better practices.
 
-**Policymakers**
+## Policymakers
 
 Policymakers hold the authority to embed sustainability into AI systems through regulations and governance. Ongoing initiatives, such as the European Union’s AI transparency legislation, illustrate the growing push toward accountability. Policymakers can begin with voluntary energy transparency frameworks, gradually evolving them into mandatory regulations that prioritize energy efficiency. Independent regulatory bodies may also be established to monitor energy consumption trends and ensure compliance with evolving global standards.
 
