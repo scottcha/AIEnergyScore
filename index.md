@@ -478,9 +478,9 @@ Every role in the AI ecosystem has a part to play in driving adoption of AI Ener
 
 AI researchers and developers are central to driving innovation. By incorporating sustainability considerations into the entire life cycle—from development to deployment—they can minimize environmental impacts from the outset. A key step is making energy reporting a standard practice. Developers can achieve this by including energy metrics in documentation, such as \\textit{model cards} that detail training data, performance evaluations, and metadata. Encouraging transparency and public disclosure will foster accountability and help establish sustainability as a norm in AI development.
 
-## Enterprises and Product Managers
+## Enterprises
 
-As decision-makers in the AI value chain, enterprises and AI product creators play a crucial role in promoting energy transparency. By prioritizing low-energy models in procurement policies, organizations can influence market behavior. Key actions include:
+As decision-makers in the AI value chain, enterprises (as well as AI product creators) play a crucial role in promoting energy transparency. By prioritizing low-energy models in procurement policies, organizations can influence market behavior. Key actions include:
 
 - Requiring AI solutions to meet specific energy benchmarks, such as a minimum **AI Energy Score**.
 - Supporting industry-wide sustainability standards and advocating for regulatory measures.
