@@ -15,7 +15,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-ins
 COPY requirements.txt requirements.txt
 RUN pip install -r requirements.txt
 
-RUN git clone -b energy_star_dev https://github.com/huggingface/optimum-benchmark.git /optimum-benchmark && cd /optimum-benchmark && pip install -e .
+RUN git clone https://github.com/huggingface/optimum-benchmark.git /optimum-benchmark && cd /optimum-benchmark && pip install -e .
 
 COPY ./check_h100.py /check_h100.py
 COPY ./entrypoint.sh /entrypoint.sh
