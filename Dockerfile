@@ -19,6 +19,8 @@ RUN git clone https://github.com/huggingface/optimum-benchmark.git /optimum-benc
 
 COPY ./check_h100.py /check_h100.py
 COPY ./entrypoint.sh /entrypoint.sh
+COPY ./summarize_gpu_wh.py /summarize_gpu_wh.py
 RUN chmod +x /entrypoint.sh
+RUN chmod +x /summarize_gpu_wh.py
 
 ENTRYPOINT ["/entrypoint.sh"]
