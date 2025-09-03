@@ -1,5 +1,5 @@
 accelerate==1.10.0
-codecarbon==2.5.1
+codecarbon==3.0.4
 datasets==4.0.0
 diffusers==0.34.0
 huggingface-hub==0.34.4
