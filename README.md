@@ -13,7 +13,7 @@ Welcome to AI Energy Score! This is an initiative to establish comparable energy
 ### Hardware
 
 The Dockerfile provided in this repository is made to be used on the NVIDIA H100-80GB GPU.
-If you would like to run benchmarks on other types of hardware, we invite you to take a look at [these configuration examples](https://github.com/huggingface/optimum-benchmark/tree/energy_star_dev/examples/energy_star) that can be run directly with [Optimum Benchmark](https://github.com/huggingface/optimum-benchmark/tree/energy_star_dev). However, evaluations completed on other hardware would not be currently compatable and comparable with the rest of the AI Energy Score data.
+If you would like to run benchmarks on other types of hardware, we invite you to take a look at [these configuration examples](https://github.com/huggingface/optimum-benchmark/tree/main/energy_star) that can be run directly with [Optimum Benchmark](https://github.com/huggingface/optimum-benchmark/). However, evaluations completed on other hardware would not be currently compatable and comparable with the rest of the AI Energy Score data.
 
 
 ### Usage
@@ -29,9 +29,9 @@ Then you can run your benchmark with:
 ```
 docker run --gpus all --shm-size 1g energy_star --config-name my_task backend.model=my_model backend.processor=my_processor 
 ```
-where `my_task` is the name of a task with a configuration [here](https://github.com/huggingface/optimum-benchmark/tree/energy_star_dev/examples/energy_star), `my_model` is the name of your model that you want to test (which needs to be compatible with either the Transformers or the Diffusers libraries) and `my_processor` is the name of the tokenizer/processor you want to use. In most cases, `backend.model` and `backend.processor` wil lbe identical, except in cases where a model is using another model's tokenizer (e.g. from a LLaMa model).
+where `my_task` is the name of a task with a configuration [here](https://github.com/huggingface/optimum-benchmark/tree/main/energy_star), `my_model` is the name of your model that you want to test (which needs to be compatible with either the Transformers or the Diffusers libraries) and `my_processor` is the name of the tokenizer/processor you want to use. In most cases, `backend.model` and `backend.processor` wil lbe identical, except in cases where a model is using another model's tokenizer (e.g. from a LLaMa model).
 
-The rest of the configuration is explained [here](https://github.com/huggingface/optimum-benchmark/tree/energy_star_dev?tab=readme-ov-file#configuration-overrides-%EF%B8%8F)
+The rest of the configuration is explained [here](https://github.com/huggingface/optimum-benchmark/)
 
 > [!WARNING]  
 > It is essential to adhere to the following GPU usage guidelines:
