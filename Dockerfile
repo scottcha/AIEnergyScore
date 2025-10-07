@@ -1,4 +1,7 @@
-FROM pytorch/pytorch:2.7.1-cuda12.6-cudnn9-runtime
+FROM pytorch/pytorch:2.8.0-cuda12.9-cudnn9-runtime 
+
+# Update PyTorch to nightly for Blackwell support
+#RUN pip install --pre torch torchvision --index-url https://download.pytorch.org/whl/nightly/cu126
 
 ARG TARGETPLATFORM
 
