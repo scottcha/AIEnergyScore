@@ -24,9 +24,18 @@ backend:
 scenario:
   dataset_name: EnergyStarAI/text_generation
   text_column_name: text
-  num_samples: 1000
+  num_samples: 50
   truncation: True
-#  iterations: 1
+  iterations: 1
+
+  # Reasoning/thinking model support (optional)
+  # Set to True to enable reasoning mode for thinking models
+  reasoning: False
+  # reasoning_params:
+  #   reasoning_effort: high  # Options: low, medium, high (model-specific)
+  #   # Alternative model-specific parameters:
+  #   # thinking_budget: 1000  # Token budget for thinking (DeepSeek-R1, etc.)
+  #   # cot_depth: 3  # Chain-of-thought depth
 
   input_shapes:
     batch_size: 1

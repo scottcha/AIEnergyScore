@@ -37,17 +37,21 @@ def parse_hydra_args(args):
 
 def load_optimum_config(config_name, config_dir="/optimum-benchmark/energy_star"):
     """Load optimum-benchmark configuration"""
-    config_path = Path(config_dir) / f"{config_name}.yaml"
+    # Try multiple locations
+    search_paths = [
+        Path(config_dir) / f"{config_name}.yaml",
+        Path(config_dir) / config_name,
+        # Also try in current directory (for AIEnergyScore configs)
+        Path(f"{config_name}.yaml"),
+        Path(config_name),
+    ]
 
-    if not config_path.exists():
-        # Try without .yaml extension
-        config_path = Path(config_dir) / config_name
+    for config_path in search_paths:
+        if config_path.exists():
+            logger.info(f"Loading config from: {config_path}")
+            return OmegaConf.load(config_path)
 
-    if not config_path.exists():
-        raise FileNotFoundError(f"Config not found: {config_path}")
-
-    logger.info(f"Loading config from: {config_path}")
-    return OmegaConf.load(config_path)
+    raise FileNotFoundError(f"Config not found in any of: {[str(p) for p in search_paths]}")
 
 
 def get_available_gpu_count():
@@ -114,6 +118,10 @@ def convert_to_ai_energy_benchmarks_config(optimum_config, overrides):
             "max_new_tokens": int(scenario.get("generate_kwargs", {}).get("max_new_tokens", 100)),
             "min_new_tokens": int(scenario.get("generate_kwargs", {}).get("min_new_tokens", 50)),
         },
+        "reasoning": {
+            "enabled": scenario.get("reasoning", False),
+            "params": scenario.get("reasoning_params", None),
+        },
         "metrics": {
             "enabled": True,
             "project_name": "ai_energy_benchmark",
@@ -153,6 +161,8 @@ def run_pytorch_backend(config, output_dir):
             dataset_name=config["dataset"]["name"],
             text_column_name=config["dataset"]["text_column"],
             num_samples=config["dataset"]["num_samples"],
+            reasoning=config["reasoning"]["enabled"],
+            reasoning_params=config["reasoning"]["params"],
             generate_kwargs=config["generation"],
         )
 
@@ -245,6 +255,8 @@ def run_vllm_backend(config, output_dir, endpoint):
             dataset_name=config["dataset"]["name"],
             text_column_name=config["dataset"]["text_column"],
             num_samples=config["dataset"]["num_samples"],
+            reasoning=config["reasoning"]["enabled"],
+            reasoning_params=config["reasoning"]["params"],
             generate_kwargs=config["generation"],
         )
 
