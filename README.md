@@ -70,10 +70,25 @@ docker run --gpus all --shm-size 1g \
   -e BENCHMARK_BACKEND=pytorch \
   energy_star \
   --config-name text_generation \
-  backend.model=openai/gpt-oss-120b
+  scenario.num_samples=100 \
+  backend.model=openai/gpt-oss-20b
 ```
 
+
+
 **Note:** With `BENCHMARK_BACKEND=pytorch`, ai_energy_benchmarks loads the model and generates inference load directly on the GPU, just like optimum-benchmark.
+
+### Running Tests
+
+```bash
+cd AIEnergyScore
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt pytest
+pytest
+```
+
+Use `pytest -m e2e` to run only the end-to-end suites; omit the marker filter to execute the full test collection.
 
 #### vLLM Backend (ai_energy_benchmarks)
 
