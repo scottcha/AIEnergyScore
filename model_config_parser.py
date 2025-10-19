@@ -7,11 +7,15 @@ model configurations including reasoning parameters and special formatting requi
 """
 
 import re
+import warnings
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 import pandas as pd
+
+from ai_energy_benchmarks.formatters.harmony import HarmonyFormatter
+from ai_energy_benchmarks.formatters.registry import FormatterRegistry
 
 
 @dataclass
@@ -42,6 +46,9 @@ class ModelConfigParser:
         self.csv_path = Path(csv_path)
         if not self.csv_path.exists():
             raise FileNotFoundError(f"CSV file not found: {csv_path}")
+
+        # Initialize formatter registry for reasoning format detection
+        self.formatter_registry = FormatterRegistry()
 
     def parse(self) -> List[ModelConfig]:
         """Parse CSV file and return list of model configurations.
@@ -119,6 +126,9 @@ class ModelConfigParser:
     def _parse_chat_template(self, config: ModelConfig) -> None:
         """Parse chat template and populate reasoning params and flags.
 
+        Uses FormatterRegistry for model-agnostic reasoning format detection.
+        Falls back to legacy hardcoded logic with deprecation warnings.
+
         Args:
             config: ModelConfig to populate (modified in-place)
         """
@@ -128,6 +138,67 @@ class ModelConfigParser:
         # Skip if N/A or empty
         if not template or "n/a" in template:
             return
+
+        # Get formatter from registry
+        formatter = self.formatter_registry.get_formatter(config.model_id)
+
+        if formatter:
+            # Extract reasoning parameters from template
+            reasoning_params = self._extract_reasoning_params(template)
+            config.reasoning_params = reasoning_params
+
+            # Set flags based on formatter type
+            if isinstance(formatter, HarmonyFormatter):
+                config.use_harmony = True
+        else:
+            # DEPRECATED: Fallback to old hardcoded logic
+            warnings.warn(
+                f"Model {config.model_id} not found in FormatterRegistry. "
+                f"Using deprecated hardcoded format detection. "
+                f"Please add model to reasoning_formats.yaml.",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+            self._legacy_parse_chat_template(config)
+
+    def _extract_reasoning_params(self, template: str) -> Optional[Dict[str, Any]]:
+        """Extract reasoning parameters from template string.
+
+        Args:
+            template: Chat template string (lowercase)
+
+        Returns:
+            Dict of reasoning parameters or None
+        """
+        params = {}
+
+        # Extract reasoning_effort
+        if "reasoning_effort: high" in template or "reasoning: high" in template:
+            params["reasoning_effort"] = "high"
+        elif "reasoning_effort: medium" in template or "reasoning: medium" in template:
+            params["reasoning_effort"] = "medium"
+        elif "reasoning_effort: low" in template or "reasoning: low" in template:
+            params["reasoning_effort"] = "low"
+        elif "reasoning: true" in template:
+            # Default to high if just "reasoning: true"
+            params["reasoning_effort"] = "high"
+
+        # Extract enable_thinking
+        if "enable_thinking=true" in template:
+            params["enable_thinking"] = True
+        elif "enable_thinking=false" in template:
+            params["enable_thinking"] = False
+
+        return params if params else None
+
+    def _legacy_parse_chat_template(self, config: ModelConfig) -> None:
+        """DEPRECATED: Legacy hardcoded chat template parsing.
+
+        Args:
+            config: ModelConfig to populate (modified in-place)
+        """
+        template = config.chat_template.lower()
+        model_id_lower = config.model_id.lower()
 
         # gpt-oss models: Enable Harmony formatting
         if "gpt-oss" in model_id_lower:
