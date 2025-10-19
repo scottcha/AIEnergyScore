@@ -30,6 +30,7 @@ COPY AIEnergyScore/check_h100.py /check_h100.py
 COPY AIEnergyScore/entrypoint.sh /entrypoint.sh
 COPY AIEnergyScore/summarize_gpu_wh.py /summarize_gpu_wh.py
 COPY AIEnergyScore/run_ai_energy_benchmark.py /run_ai_energy_benchmark.py
+COPY AIEnergyScore/text_generation.yaml /optimum-benchmark/energy_star/text_generation.yaml
 COPY AIEnergyScore/text_generation_gptoss.yaml /optimum-benchmark/energy_star/text_generation_gptoss.yaml
 RUN chmod +x /entrypoint.sh
 RUN chmod +x /summarize_gpu_wh.py

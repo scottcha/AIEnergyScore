@@ -1,0 +1,42 @@
+defaults:
+  - benchmark
+  - backend: pytorch
+  - launcher: process
+  - scenario: energy_star
+  - _base_
+  - _self_
+
+name: text_generation_gptoss_reasoning_low
+
+launcher:
+  device_isolation: False
+  device_isolation_action: warn
+
+backend:
+  device: cuda
+  device_ids: 0
+  no_weights: False
+  task: text-generation
+  model: openai/gpt-oss-20b
+  torch_dtype: bfloat16
+  device_map: auto
+
+scenario:
+  dataset_name: scottcha/reasoning_text_generation
+  text_column_name: text
+  num_samples: 10  # Small for testing
+  truncation: True
+  iterations: 1
+
+  # Reasoning mode with LOW effort (prompt-based for gpt-oss-20b)
+  reasoning: True
+  reasoning_params:
+    reasoning_effort: low
+    use_prompt_based_reasoning: true  # Add reasoning instructions to prompt
+
+  input_shapes:
+    batch_size: 1
+
+  generate_kwargs:
+    max_new_tokens: 1000
+    min_new_tokens: 50

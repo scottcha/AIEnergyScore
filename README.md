@@ -34,10 +34,69 @@ docker build -f AIEnergyScore/Dockerfile -t energy_star .
 
 **Note:** The build must be run from (parent directory) to access both `AIEnergyScore/` and `ai_energy_benchmarks/` directories.
 
-Then you can run your benchmark with:
+#### Quick Start with Helper Script
 
+For convenience, use the provided helper script that handles all volume mounts automatically:
+
+```bash
+cd AIEnergyScore
+./run_docker.sh --config-name text_generation backend.model=openai/gpt-oss-20b
 ```
-docker run --gpus all --shm-size 1g energy_star --config-name my_task backend.model=my_model backend.processor=my_processor 
+
+The helper script automatically:
+- Runs container as current user
+- Mounts HuggingFace cache from `~/.cache/huggingface`
+- Creates and mounts results directory
+- Configures proper environment variables
+- Defaults to 20 prompts (customize with `-n` or `--num-samples`)
+
+**Examples:**
+```bash
+# Use default 20 samples
+./run_docker.sh --config-name text_generation backend.model=openai/gpt-oss-20b
+
+# Test with 100 samples
+./run_docker.sh -n 100 --config-name text_generation backend.model=openai/gpt-oss-120b
+
+# Quick test with 5 samples
+./run_docker.sh --num-samples 5 --config-name text_generation backend.model=openai/gpt-oss-20b
+
+# Use PyTorch backend with 50 samples
+BENCHMARK_BACKEND=pytorch ./run_docker.sh -n 50 --config-name text_generation backend.model=openai/gpt-oss-20b
+```
+
+For advanced configuration, see [Docker Volume Mounting Guide](ai_helpers/DOCKER_VOLUME_MOUNTING.md).
+
+#### Manual Usage
+
+Alternatively, you can run your benchmark manually. **Important**: Create the results directory first to avoid permission errors:
+
+```bash
+# Create results directory with proper permissions
+mkdir -p results
+
+# Run the benchmark
+docker run --gpus all --shm-size 1g \
+  --user $(id -u):$(id -g) \
+  -v ~/.cache/huggingface:/home/user/.cache/huggingface \
+  -v $(pwd)/results:/results \
+  -e HOME=/home/user \
+  energy_star \
+  --config-name my_task \
+  backend.model=my_model \
+  backend.processor=my_processor
+
+#for example
+docker run --gpus all --shm-size 1g \
+  --user $(id -u):$(id -g) \
+  -v ~/.cache/huggingface:/home/user/.cache/huggingface \
+  -v $(pwd)/results:/results \
+  -e HOME=/home/user \
+  -e BENCHMARK_BACKEND=pytorch \
+  energy_star \
+  --config-name text_generation \
+  scenario.num_samples=3 \
+  backend.model=openai/gpt-oss-20b
 ```
 where `my_task` is the name of a task with a configuration [here](https://github.com/huggingface/optimum-benchmark/tree/main/energy_star), `my_model` is the name of your model that you want to test (which needs to be compatible with either the Transformers or the Diffusers libraries) and `my_processor` is the name of the tokenizer/processor you want to use. In most cases, `backend.model` and `backend.processor` wil lbe identical, except in cases where a model is using another model's tokenizer (e.g. from a LLaMa model).
 
@@ -56,17 +115,32 @@ AIEnergyScore supports multiple benchmark backends for flexibility and validatio
 #### Default Usage (optimum-benchmark)
 
 ```bash
-# Standard AIEnergyScore benchmark - no changes needed
-docker run --gpus all --shm-size 1g energy_star \
+# Standard AIEnergyScore benchmark - run as current user with cache mounting
+docker run --gpus all --shm-size 1g \
+  --user $(id -u):$(id -g) \
+  -v ~/.cache/huggingface:/home/user/.cache/huggingface \
+  -v $(pwd)/results:/results \
+  -e HOME=/home/user \
+  energy_star \
   --config-name text_generation \
   backend.model=openai/gpt-oss-120b
 ```
+
+**Volume mounts:**
+- `~/.cache/huggingface:/home/user/.cache/huggingface` - Reuse local HuggingFace model cache (avoids re-downloading)
+- `$(pwd)/results:/results` - Persist benchmark results to local directory
+- `--user $(id -u):$(id -g)` - Run as current user (not root) for proper file permissions
+- `-e HOME=/home/user` - Set HOME environment variable for HuggingFace cache location
 
 #### PyTorch Backend (ai_energy_benchmarks)
 
 ```bash
 # Use ai_energy_benchmarks with PyTorch backend for validation
 docker run --gpus all --shm-size 1g \
+  --user $(id -u):$(id -g) \
+  -v ~/.cache/huggingface:/home/user/.cache/huggingface \
+  -v $(pwd)/results:/results \
+  -e HOME=/home/user \
   -e BENCHMARK_BACKEND=pytorch \
   energy_star \
   --config-name text_generation \
@@ -98,6 +172,9 @@ vllm serve openai/gpt-oss-120b --port 8000
 
 # Terminal 2: Run benchmark (sends requests to external vLLM server)
 docker run --gpus all --shm-size 1g \
+  --user $(id -u):$(id -g) \
+  -v $(pwd)/results:/results \
+  -e HOME=/home/user \
   -e BENCHMARK_BACKEND=vllm \
   -e VLLM_ENDPOINT=http://host.docker.internal:8000/v1 \
   energy_star \

@@ -1,0 +1,45 @@
+defaults:
+  - benchmark
+  - backend: pytorch
+  - launcher: process
+  - scenario: energy_star
+  - _base_
+  - _self_
+
+name: text_generation_deepseek_r1
+
+launcher:
+  device_isolation: False
+  device_isolation_action: warn
+
+backend:
+  device: cuda
+  device_ids: 0
+  no_weights: False
+  task: text-generation
+  model: deepseek-ai/DeepSeek-R1-Distill-Llama-70B
+  torch_dtype: bfloat16
+  device_map: auto
+
+scenario:
+  dataset_name: EnergyStarAI/text_generation
+  text_column_name: text
+  num_samples: 10
+  truncation: True
+  iterations: 1
+
+  # DeepSeek-R1 doesn't use reasoning_effort explicitly
+  # It generates thinking tokens automatically
+  # We can control via max_new_tokens and generation params
+  reasoning: False  # Not using our reasoning_effort parameter
+
+  input_shapes:
+    batch_size: 1
+
+  generate_kwargs:
+    max_new_tokens: 200  # Allow space for thinking + answer
+    min_new_tokens: 50
+    # DeepSeek-R1 specific settings
+    do_sample: True
+    temperature: 0.6
+    top_p: 0.95
