@@ -1,19 +1,26 @@
 #!/bin/bash
 # Build AIEnergyScore Docker image with ai_energy_benchmarks support
 #
-# This script builds from the parent directory to allow access to both
-# AIEnergyScore and ai_energy_benchmarks directories
+# This script builds the Docker image, installing ai_energy_benchmarks from TestPyPI
 
 set -e
 
-echo "Building AIEnergyScore Docker image with ai_energy_benchmarks support..."
+echo "Building AIEnergyScore Docker image with ai_energy_benchmarks from TestPyPI..."
 echo "Build context: ~/src/"
 echo ""
 
 cd ~/src/
 
+# Default version (can be overridden)
+AI_ENERGY_BENCHMARKS_VERSION=${AI_ENERGY_BENCHMARKS_VERSION:-0.0.1rc1}
+
+echo "Using ai_energy_benchmarks version: ${AI_ENERGY_BENCHMARKS_VERSION}"
+echo ""
+
+# Build Docker image
 docker build \
     -f AIEnergyScore/Dockerfile \
+    --build-arg AI_ENERGY_BENCHMARKS_VERSION=${AI_ENERGY_BENCHMARKS_VERSION} \
     -t ai_energy_score \
     .
 
