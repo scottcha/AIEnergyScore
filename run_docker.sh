@@ -13,13 +13,22 @@
 #   DOCKER_IMAGE            Docker image name (default: energy_star)
 #   RESULTS_DIR             Results directory (default: ./results)
 #   HF_HOME                 HuggingFace cache location (default: ~/.cache/huggingface)
+#   HF_TOKEN                HuggingFace API token for gated models (optional)
 #   BENCHMARK_BACKEND       Backend selection: optimum, pytorch, vllm (default: optimum)
+#
+# Authentication for Gated Models:
+#   This script automatically detects and mounts your HuggingFace token for
+#   accessing gated models. Two methods are supported:
+#   1. Token file (automatic): If you've logged in via 'huggingface-cli login',
+#      your token at ~/.huggingface/token will be automatically mounted
+#   2. Environment variable: Set HF_TOKEN to explicitly pass your token
 #
 # Examples:
 #   ./run_docker.sh --config-name text_generation backend.model=openai/gpt-oss-20b
 #   ./run_docker.sh -n 100 --config-name text_generation backend.model=openai/gpt-oss-120b
 #   BENCHMARK_BACKEND=pytorch ./run_docker.sh -n 50 --config-name text_generation backend.model=openai/gpt-oss-20b
 #   ./run_docker.sh --config-name text_generation backend.model=openai/gpt-oss-20b scenario.num_samples=100
+#   HF_TOKEN=hf_xxx ./run_docker.sh --config-name text_generation backend.model=google/gemma-3-1b-pt
 
 set -e
 
@@ -27,6 +36,7 @@ set -e
 IMAGE_NAME="${DOCKER_IMAGE:-energy_star}"
 RESULTS_DIR="${RESULTS_DIR:-$(pwd)/results}"
 HF_CACHE="${HF_HOME:-$HOME/.cache/huggingface}"
+HF_TOKEN_FILE="${HOME}/.huggingface/token"
 NUM_SAMPLES=20
 
 # Function to show help
@@ -63,6 +73,25 @@ if [ ! -d "${HF_CACHE}" ]; then
     mkdir -p "${HF_CACHE}"
 fi
 
+# Check for HuggingFace authentication
+HF_AUTH_AVAILABLE=false
+if [ -n "${HF_TOKEN}" ]; then
+    HF_AUTH_AVAILABLE=true
+    echo "Note: Using HF_TOKEN from environment variable for authentication"
+elif [ -f "${HF_TOKEN_FILE}" ]; then
+    HF_AUTH_AVAILABLE=true
+    echo "Note: Found HuggingFace token file at ${HF_TOKEN_FILE}"
+fi
+
+if [ "${HF_AUTH_AVAILABLE}" = false ]; then
+    echo ""
+    echo "Warning: No HuggingFace authentication found"
+    echo "If you need to access gated models (e.g., google/gemma-3-1b-pt):"
+    echo "  1. Login via: huggingface-cli login"
+    echo "  2. Or set HF_TOKEN environment variable"
+    echo ""
+fi
+
 # Check if running with vLLM backend (doesn't need HF cache mount)
 BACKEND="${BENCHMARK_BACKEND:-optimum}"
 VOLUME_MOUNTS="-v ${RESULTS_DIR}:/results"
@@ -70,6 +99,11 @@ VOLUME_MOUNTS="-v ${RESULTS_DIR}:/results"
 if [ "$BACKEND" != "vllm" ]; then
     # Mount HF cache for pytorch and optimum backends
     VOLUME_MOUNTS="${VOLUME_MOUNTS} -v ${HF_CACHE}:/home/user/.cache/huggingface"
+fi
+
+# Mount HuggingFace token file if it exists (for gated model access)
+if [ -f "${HF_TOKEN_FILE}" ]; then
+    VOLUME_MOUNTS="${VOLUME_MOUNTS} -v ${HF_TOKEN_FILE}:/home/user/.huggingface/token:ro"
 fi
 
 # Display configuration
@@ -95,6 +129,11 @@ echo ""
 ENV_VARS="-e HOME=/home/user -e BENCHMARK_BACKEND=${BACKEND}"
 if [ "$BACKEND" = "vllm" ] && [ -n "$VLLM_ENDPOINT" ]; then
     ENV_VARS="$ENV_VARS -e VLLM_ENDPOINT=${VLLM_ENDPOINT}"
+fi
+
+# Pass HF_TOKEN if set (for gated model access)
+if [ -n "${HF_TOKEN}" ]; then
+    ENV_VARS="${ENV_VARS} -e HF_TOKEN=${HF_TOKEN}"
 fi
 
 # Build additional arguments

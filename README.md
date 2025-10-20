@@ -8,6 +8,9 @@ Welcome to AI Energy Score! This is an initiative to establish comparable energy
 - [Documentation](https://huggingface.github.io/AIEnergyScore/#documentation)
 - [Label Generator](https://huggingface.co/spaces/AIEnergyScore/Label)
 
+## 🔐 Gated Model Support
+AIEnergyScore now supports **automatic authentication** for gated models on HuggingFace! Simply run `huggingface-cli login` once, and you'll have seamless access to models like Gemma, Llama, and other restricted models. See [Authentication for Gated Models](#authentication-for-gated-models) for details.
+
 
 ## Evaluating a Proprietary Model
 ### Hardware
@@ -46,9 +49,12 @@ cd AIEnergyScore
 The helper script automatically:
 - Runs container as current user
 - Mounts HuggingFace cache from `~/.cache/huggingface`
+- **Automatically detects and mounts HuggingFace authentication tokens** (for gated models)
 - Creates and mounts results directory
 - Configures proper environment variables
 - Defaults to 20 prompts (customize with `-n` or `--num-samples`)
+
+> **Note for Gated Models**: If you need to access gated models (like `google/gemma-3-4b-pt` or Meta Llama models), run `huggingface-cli login` first. See [Authentication for Gated Models](#authentication-for-gated-models) for details.
 
 **Examples:**
 ```bash
@@ -66,6 +72,54 @@ BENCHMARK_BACKEND=pytorch ./run_docker.sh -n 50 --config-name text_generation ba
 ```
 
 For advanced configuration, see [Docker Volume Mounting Guide](ai_helpers/DOCKER_VOLUME_MOUNTING.md).
+
+#### Authentication for Gated Models
+
+Some models on HuggingFace (e.g., `google/gemma-3-1b-pt`, Meta Llama models) require authentication to access. The `run_docker.sh` script automatically handles authentication using two methods:
+
+**Method 1: HuggingFace CLI Login (Recommended)**
+
+The easiest way to authenticate is using the HuggingFace CLI:
+
+```bash
+# One-time setup: login to HuggingFace
+huggingface-cli login
+
+# Then use normally - token is automatically mounted
+./run_docker.sh --config-name text_generation backend.model=google/gemma-3-1b-pt
+```
+
+This creates a token file at `~/.huggingface/token` which is automatically detected and mounted by `run_docker.sh`.
+
+**Method 2: HF_TOKEN Environment Variable**
+
+Alternatively, you can pass your token explicitly:
+
+```bash
+# Get your token from https://huggingface.co/settings/tokens
+export HF_TOKEN=hf_your_token_here
+
+# Run with token from environment
+HF_TOKEN=hf_xxx ./run_docker.sh --config-name text_generation backend.model=google/gemma-3-1b-pt
+```
+
+**Troubleshooting Authentication Issues**
+
+If you get a 401 error when accessing gated models:
+
+1. **Verify you have access**: Visit the model page on HuggingFace and accept the terms of use
+2. **Check authentication**: Run `huggingface-cli whoami` to verify you're logged in
+3. **Verify token file exists**: Check that `~/.huggingface/token` exists
+4. **Use diagnostic script**: Run `./ai_helpers/check_hf_auth.sh` to check your authentication status
+5. **Use HF_TOKEN**: Try passing the token explicitly via environment variable
+
+The `run_docker.sh` script will display a warning if no authentication is found when you run it.
+
+**Quick Diagnostic**
+```bash
+# Check your HuggingFace authentication status
+./ai_helpers/check_hf_auth.sh
+```
 
 #### Manual Usage
 
@@ -97,6 +151,18 @@ docker run --gpus all --shm-size 1g \
   --config-name text_generation \
   scenario.num_samples=3 \
   backend.model=openai/gpt-oss-20b
+
+# For gated models, add token file mount and/or HF_TOKEN
+docker run --gpus all --shm-size 1g \
+  --user $(id -u):$(id -g) \
+  -v ~/.cache/huggingface:/home/user/.cache/huggingface \
+  -v ~/.huggingface/token:/home/user/.huggingface/token:ro \
+  -v $(pwd)/results:/results \
+  -e HOME=/home/user \
+  -e HF_TOKEN=hf_your_token_here \
+  energy_star \
+  --config-name text_generation \
+  backend.model=google/gemma-3-1b-pt
 ```
 where `my_task` is the name of a task with a configuration [here](https://github.com/huggingface/optimum-benchmark/tree/main/energy_star), `my_model` is the name of your model that you want to test (which needs to be compatible with either the Transformers or the Diffusers libraries) and `my_processor` is the name of the tokenizer/processor you want to use. In most cases, `backend.model` and `backend.processor` wil lbe identical, except in cases where a model is using another model's tokenizer (e.g. from a LLaMa model).
 

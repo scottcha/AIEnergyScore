@@ -1,8 +1,8 @@
 accelerate==1.10.0
 codecarbon==3.0.4
 datasets==4.0.0
-diffusers==0.34.0
-huggingface-hub==0.34.4
-transformers==4.55.2
+git+https://github.com/huggingface/diffusers.git
+huggingface-hub>=0.34.4
+git+https://github.com/huggingface/transformers.git
 librosa==0.10.1
 omegaconf==2.3.0

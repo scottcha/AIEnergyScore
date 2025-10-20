@@ -24,7 +24,7 @@ RUN git clone https://github.com/huggingface/optimum-benchmark.git /optimum-benc
 # Install ai_energy_benchmarks (optional backend)
 # Copy and install from local source
 COPY ai_energy_benchmarks /ai_energy_benchmarks
-RUN pip install -e /ai_energy_benchmarks
+RUN cd /ai_energy_benchmarks && pip install .
 
 COPY AIEnergyScore/check_h100.py /check_h100.py
 COPY AIEnergyScore/entrypoint.sh /entrypoint.sh

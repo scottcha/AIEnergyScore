@@ -94,6 +94,29 @@ class BatchRunner:
             # Default to None - will use HuggingFace dataset scottcha/reasoning_text_generation
             self.prompts_file = None
 
+    def _is_reasoning_enabled(self, reasoning_params: Optional[Dict]) -> bool:
+        """Check if reasoning is actually enabled based on parameter values.
+
+        Args:
+            reasoning_params: Dictionary of reasoning parameters
+
+        Returns:
+            True if reasoning is enabled, False otherwise
+        """
+        if not reasoning_params:
+            return False
+
+        # Check common reasoning disable patterns
+        if reasoning_params.get('enable_thinking') is False:
+            return False
+        if reasoning_params.get('reasoning') is False:
+            return False
+        if reasoning_params.get('reasoning_effort') == 'off':
+            return False
+
+        # Any other parameters present = reasoning enabled
+        return True
+
     def _run_via_docker(
         self,
         config: ModelConfig,
@@ -136,12 +159,17 @@ class BatchRunner:
                 # Use default dataset
                 cmd.append("scenario.dataset_name=scottcha/reasoning_text_generation")
 
-            # Add reasoning parameters if present
-            if config.reasoning_params:
+            # Add reasoning parameters if actually enabled
+            if self._is_reasoning_enabled(config.reasoning_params):
                 cmd.append("scenario.reasoning=True")
                 # Note: reasoning_params is a dict, needs special handling
                 for key, value in config.reasoning_params.items():
-                    cmd.append(f"scenario.reasoning_params.{key}={value}")
+                    # Convert boolean values to lowercase strings for Hydra/OmegaConf
+                    if isinstance(value, bool):
+                        value_str = str(value).lower()
+                    else:
+                        value_str = str(value)
+                    cmd.append(f"scenario.reasoning_params.{key}={value_str}")
 
                 # For reasoning modes: Remove token constraints to allow model to generate as needed
                 # Set very high max to avoid truncation, no min to allow short responses
@@ -195,15 +223,60 @@ class BatchRunner:
                 results = json.load(f)
 
             logger.info("Successfully loaded results from docker run")
+
+            # Explicit Docker cleanup - ensure containers are fully stopped
+            self._cleanup_docker_containers(logger)
+
             return results
 
         except subprocess.TimeoutExpired:
             logger.error("Docker command timed out after 1 hour")
+            self._cleanup_docker_containers(logger)
             return None
         except Exception as e:
             logger.error(f"Error running via docker: {e}")
             logger.log_error_details(e)
+            self._cleanup_docker_containers(logger)
             return None
+
+    def _cleanup_docker_containers(self, logger: DebugLogger) -> None:
+        """Clean up any lingering Docker containers from benchmark runs.
+
+        Args:
+            logger: Logger instance
+        """
+        try:
+            # Wait a moment for container to fully exit
+            time.sleep(1)
+
+            # Find and remove any exited energy_star containers
+            result = subprocess.run(
+                ["docker", "ps", "-a", "--filter", "ancestor=energy_star", "--filter", "status=exited", "-q"],
+                capture_output=True,
+                text=True,
+                timeout=10
+            )
+
+            if result.returncode == 0 and result.stdout.strip():
+                container_ids = result.stdout.strip().split('\n')
+                logger.debug(f"Found {len(container_ids)} exited containers to clean up")
+
+                for container_id in container_ids:
+                    try:
+                        subprocess.run(
+                            ["docker", "rm", "-f", container_id],
+                            capture_output=True,
+                            timeout=10
+                        )
+                        logger.debug(f"Removed container {container_id[:12]}")
+                    except Exception as rm_err:
+                        logger.warning(f"Failed to remove container {container_id[:12]}: {rm_err}")
+
+            # Small delay to let Docker fully release resources
+            time.sleep(0.5)
+
+        except Exception as e:
+            logger.warning(f"Docker cleanup error (non-fatal): {e}")
 
     def _cleanup_gpu_memory(self, logger: DebugLogger) -> None:
         """Clean up GPU memory between model runs.
@@ -496,7 +569,8 @@ class BatchRunner:
 
         # Scenario configuration
         # Set token constraints based on reasoning mode
-        if config.reasoning_params:
+        is_reasoning = self._is_reasoning_enabled(config.reasoning_params)
+        if is_reasoning:
             # For reasoning modes: Allow model to generate as needed
             generate_kwargs = {"max_new_tokens": 8192, "min_new_tokens": 1}
         else:
@@ -507,8 +581,8 @@ class BatchRunner:
             dataset_name=dataset_name,
             text_column_name="text",
             num_samples=self.num_prompts or 10,
-            reasoning=bool(config.reasoning_params),
-            reasoning_params=config.reasoning_params,
+            reasoning=is_reasoning,
+            reasoning_params=config.reasoning_params if is_reasoning else None,
             generate_kwargs=generate_kwargs,
         )
 
