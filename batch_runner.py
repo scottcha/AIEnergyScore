@@ -7,6 +7,8 @@ with support for model-specific parameters, filtering, and comprehensive
 results tracking.
 """
 
+from __future__ import annotations
+
 import argparse
 import gc
 import json
@@ -44,7 +46,13 @@ try:
 except ImportError as e:
     print(f"Warning: ai_energy_benchmarks not installed or not in path: {e}")
     print("PyTorch backend will use docker, vLLM backend requires: pip install ai_energy_benchmarks")
-    BenchmarkRunner = None
+    # Set all to None for type hints (won't be used with PyTorch backend)
+    BackendConfig = None  # type: ignore
+    BenchmarkConfig = None  # type: ignore
+    MetricsConfig = None  # type: ignore
+    ReporterConfig = None  # type: ignore
+    ScenarioConfig = None  # type: ignore
+    BenchmarkRunner = None  # type: ignore
 
 
 class BatchRunner:
