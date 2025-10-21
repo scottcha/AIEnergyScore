@@ -126,10 +126,10 @@ cd /home/scott/src/AIEnergyScore
 ### Problem: Docker execution fails
 
 **Solution:**
-Ensure Docker is running and the `energy_star` image is built:
+Ensure Docker is running and the `ai_energy_score` image is built:
 ```bash
 docker ps
-docker images | grep energy_star
+docker images | grep ai_energy_score
 
 # If image missing, build it
 cd /mnt/storage/src/ai_energy_benchmarks

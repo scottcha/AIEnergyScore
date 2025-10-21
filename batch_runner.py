@@ -186,7 +186,7 @@ class BatchRunner:
             env = os.environ.copy()
             env["BENCHMARK_BACKEND"] = "pytorch"
             env["RESULTS_DIR"] = str(run_dir.resolve())  # Convert to absolute path for docker
-            env["DOCKER_IMAGE"] = os.getenv("DOCKER_IMAGE", "energy_star")
+            env["DOCKER_IMAGE"] = os.getenv("DOCKER_IMAGE", "ai_energy_score")
             env["HF_HOME"] = os.getenv("HF_HOME", str(Path.home() / ".cache" / "huggingface"))
 
             logger.info(f"Running docker command: {' '.join(cmd)}")
@@ -249,9 +249,9 @@ class BatchRunner:
             # Wait a moment for container to fully exit
             time.sleep(1)
 
-            # Find and remove any exited energy_star containers
+            # Find and remove any exited ai_energy_score containers
             result = subprocess.run(
-                ["docker", "ps", "-a", "--filter", "ancestor=energy_star", "--filter", "status=exited", "-q"],
+                ["docker", "ps", "-a", "--filter", "ancestor=ai_energy_score", "--filter", "status=exited", "-q"],
                 capture_output=True,
                 text=True,
                 timeout=10

@@ -58,7 +58,7 @@ AIEnergyScore/
 
 **Current Flow:**
 ```bash
-docker run --gpus all energy_star \
+docker run --gpus all ai_energy_score \
   --config-name text_generation \
   backend.model=openai/gpt-oss-120b
 
@@ -202,16 +202,16 @@ ai_energy_benchmarks/
 ```bash
 # Use optimum-benchmark (default)
 export BENCHMARK_BACKEND=optimum
-docker run --gpus all energy_star --config-name text_generation
+docker run --gpus all ai_energy_score --config-name text_generation
 
 # Use ai_energy_benchmarks PyTorch
 export BENCHMARK_BACKEND=pytorch
-docker run --gpus all energy_star --config-name text_generation
+docker run --gpus all ai_energy_score --config-name text_generation
 
 # Use ai_energy_benchmarks vLLM (requires vLLM server)
 export BENCHMARK_BACKEND=vllm
 export VLLM_ENDPOINT=http://localhost:8000/v1
-docker run --gpus all energy_star --config-name text_generation
+docker run --gpus all ai_energy_score --config-name text_generation
 ```
 
 #### Option B: Configuration File (Recommended for neuralwatt_cloud)
@@ -789,14 +789,14 @@ fi
 
 ```bash
 # Default: optimum-benchmark
-docker run --gpus all energy_star \
+docker run --gpus all ai_energy_score \
   --config-name text_generation \
   backend.model=openai/gpt-oss-120b
 
 # Use ai_energy_benchmarks PyTorch
 docker run --gpus all \
   -e BENCHMARK_BACKEND=pytorch \
-  energy_star \
+  ai_energy_score \
   --config-name text_generation \
   backend.model=openai/gpt-oss-120b
 
@@ -804,7 +804,7 @@ docker run --gpus all \
 docker run --gpus all \
   -e BENCHMARK_BACKEND=vllm \
   -e VLLM_ENDPOINT=http://host.docker.internal:8000/v1 \
-  energy_star \
+  ai_energy_score \
   --config-name text_generation \
   backend.model=openai/gpt-oss-120b
 ```
@@ -1511,11 +1511,11 @@ def test_pytorch_vs_optimum_compatibility():
 1. **AIEnergyScore Workflow**
    ```bash
    # Test optimum-benchmark (baseline)
-   docker run --gpus all energy_star \
+   docker run --gpus all ai_energy_score \
      --config-name text_generation_validation
 
    # Test ai_energy_benchmarks PyTorch
-   docker run --gpus all -e BENCHMARK_BACKEND=pytorch energy_star \
+   docker run --gpus all -e BENCHMARK_BACKEND=pytorch ai_energy_score \
      --config-name text_generation_validation
 
    # Compare GPU_ENERGY_WH outputs
@@ -1774,7 +1774,7 @@ def validate_backend_results(optimum_results, pytorch_results):
 
 ```bash
 # Current usage - no changes needed
-docker run --gpus all energy_star \
+docker run --gpus all ai_energy_score \
   --config-name text_generation \
   backend.model=openai/gpt-oss-120b
 ```
@@ -1785,7 +1785,7 @@ docker run --gpus all energy_star \
 # New usage - add environment variable
 docker run --gpus all \
   -e BENCHMARK_BACKEND=pytorch \
-  energy_star \
+  ai_energy_score \
   --config-name text_generation \
   backend.model=openai/gpt-oss-120b
 ```

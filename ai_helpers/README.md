@@ -27,7 +27,7 @@ cd AIEnergyScore
 - Configurable number of test prompts with sensible default
 
 **Environment Variables**:
-- `DOCKER_IMAGE` - Override default image name (default: `energy_star`)
+- `DOCKER_IMAGE` - Override default image name (default: `ai_energy_score`)
 - `RESULTS_DIR` - Custom results directory (default: `./results`)
 - `HF_HOME` - Custom HuggingFace cache location (default: `~/.cache/huggingface`)
 - `BENCHMARK_BACKEND` - Backend selection: `optimum`, `pytorch`, `vllm` (default: `optimum`)
@@ -164,7 +164,7 @@ docker run --gpus all --shm-size 1g \
   -v ~/.cache/huggingface:/home/user/.cache/huggingface \
   -v $(pwd)/results:/results \
   -e HOME=/home/user \
-  energy_star \
+  ai_energy_score \
   --config-name text_generation \
   backend.model=openai/gpt-oss-20b \
   scenario.num_samples=20

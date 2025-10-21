@@ -406,13 +406,13 @@ If you would like to run benchmarks on other types of hardware, we invite you to
 You can build the Docker image with:
 
 ```
-docker build -t energy_star .
+docker build -t ai_energy_score .
 ```
 
 Then you can run your benchmark with:
 
 ```
-docker run --gpus all --shm-size 1g energy_star --config-name my_task backend.model=my_model backend.processor=my_processor 
+docker run --gpus all --shm-size 1g ai_energy_score --config-name my_task backend.model=my_model backend.processor=my_processor 
 ```
 where `my_task` is the name of a task with a configuration [here](https://github.com/huggingface/optimum-benchmark/tree/energy_star_dev/examples/energy_star), `my_model` is the name of your model that you want to test (which needs to be compatible with either the Transformers or the Diffusers libraries) and `my_processor` is the name of the tokenizer/processor you want to use. In most cases, `backend.model` and `backend.processor` wil lbe identical, except in cases where a model is using another model's tokenizer (e.g. from a LLaMa model).
 

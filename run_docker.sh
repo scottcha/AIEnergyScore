@@ -10,7 +10,7 @@
 #   -h, --help              Show this help message
 #
 # Environment Variables:
-#   DOCKER_IMAGE            Docker image name (default: energy_star)
+#   DOCKER_IMAGE            Docker image name (default: ai_energy_score)
 #   RESULTS_DIR             Results directory (default: ./results)
 #   HF_HOME                 HuggingFace cache location (default: ~/.cache/huggingface)
 #   HF_TOKEN                HuggingFace API token for gated models (optional)
@@ -33,7 +33,7 @@
 set -e
 
 # Default configuration
-IMAGE_NAME="${DOCKER_IMAGE:-energy_star}"
+IMAGE_NAME="${DOCKER_IMAGE:-ai_energy_score}"
 RESULTS_DIR="${RESULTS_DIR:-$(pwd)/results}"
 HF_CACHE="${HF_HOME:-$HOME/.cache/huggingface}"
 HF_TOKEN_FILE="${HOME}/.huggingface/token"

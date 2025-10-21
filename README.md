@@ -32,7 +32,7 @@ The Docker image includes both optimum-benchmark and ai_energy_benchmarks. Use t
 Or build manually from the parent directory:
 
 ```bash
-docker build -f AIEnergyScore/Dockerfile -t energy_star .
+docker build -f AIEnergyScore/Dockerfile -t ai_energy_score .
 ```
 
 **Note:** The build must be run from (parent directory) to access both `AIEnergyScore/` and `ai_energy_benchmarks/` directories.
@@ -135,7 +135,7 @@ docker run --gpus all --shm-size 1g \
   -v ~/.cache/huggingface:/home/user/.cache/huggingface \
   -v $(pwd)/results:/results \
   -e HOME=/home/user \
-  energy_star \
+  ai_energy_score \
   --config-name my_task \
   backend.model=my_model \
   backend.processor=my_processor
@@ -147,7 +147,7 @@ docker run --gpus all --shm-size 1g \
   -v $(pwd)/results:/results \
   -e HOME=/home/user \
   -e BENCHMARK_BACKEND=pytorch \
-  energy_star \
+  ai_energy_score \
   --config-name text_generation \
   scenario.num_samples=3 \
   backend.model=openai/gpt-oss-20b
@@ -160,7 +160,7 @@ docker run --gpus all --shm-size 1g \
   -v $(pwd)/results:/results \
   -e HOME=/home/user \
   -e HF_TOKEN=hf_your_token_here \
-  energy_star \
+  ai_energy_score \
   --config-name text_generation \
   backend.model=google/gemma-3-1b-pt
 ```
@@ -187,7 +187,7 @@ docker run --gpus all --shm-size 1g \
   -v ~/.cache/huggingface:/home/user/.cache/huggingface \
   -v $(pwd)/results:/results \
   -e HOME=/home/user \
-  energy_star \
+  ai_energy_score \
   --config-name text_generation \
   backend.model=openai/gpt-oss-120b
 ```
@@ -208,7 +208,7 @@ docker run --gpus all --shm-size 1g \
   -v $(pwd)/results:/results \
   -e HOME=/home/user \
   -e BENCHMARK_BACKEND=pytorch \
-  energy_star \
+  ai_energy_score \
   --config-name text_generation \
   scenario.num_samples=100 \
   backend.model=openai/gpt-oss-20b
@@ -243,7 +243,7 @@ docker run --gpus all --shm-size 1g \
   -e HOME=/home/user \
   -e BENCHMARK_BACKEND=vllm \
   -e VLLM_ENDPOINT=http://host.docker.internal:8000/v1 \
-  energy_star \
+  ai_energy_score \
   --config-name text_generation \
   backend.model=openai/gpt-oss-120b
 ```

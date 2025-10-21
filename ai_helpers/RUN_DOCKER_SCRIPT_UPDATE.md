@@ -62,7 +62,7 @@ Shows configuration before running:
 ============================================
 AIEnergyScore Docker Runner
 ============================================
-Image:         energy_star
+Image:         ai_energy_score
 Backend:       pytorch
 Num Samples:   20
 Results dir:   /mnt/storage/src/AIEnergyScore/results
@@ -82,7 +82,7 @@ User:          1000:1000
 
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `DOCKER_IMAGE` | Docker image name | `energy_star` |
+| `DOCKER_IMAGE` | Docker image name | `ai_energy_score` |
 | `RESULTS_DIR` | Results output directory | `./results` |
 | `HF_HOME` | HuggingFace cache location | `~/.cache/huggingface` |
 | `BENCHMARK_BACKEND` | Backend: optimum, pytorch, vllm | `optimum` |

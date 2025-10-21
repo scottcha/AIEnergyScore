@@ -107,7 +107,7 @@ cd AIEnergyScore
 
 ```bash
 # DON'T USE - Old pattern without cache mounting
-docker run --gpus all --shm-size 1g energy_star \
+docker run --gpus all --shm-size 1g ai_energy_score \
   --config-name text_generation \
   backend.model=openai/gpt-oss-20b
 ```
@@ -127,7 +127,7 @@ docker run --gpus all --shm-size 1g \
   -v ~/.cache/huggingface:/home/user/.cache/huggingface \
   -v $(pwd)/results:/results \
   -e HOME=/home/user \
-  energy_star \
+  ai_energy_score \
   --config-name text_generation \
   backend.model=openai/gpt-oss-20b
 ```
@@ -145,7 +145,7 @@ To verify the changes work correctly:
 1. **Build the image**:
    ```bash
    cd /mnt/storage/src
-   docker build -f AIEnergyScore/Dockerfile -t energy_star .
+   docker build -f AIEnergyScore/Dockerfile -t ai_energy_score .
    ```
 
 2. **Run with helper script**:

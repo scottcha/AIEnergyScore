@@ -30,7 +30,7 @@ docker run --gpus all \
   --shm-size 8g \
   -v $(pwd)/pytorch_validation.yaml:/optimum-benchmark/energy_star/pytorch_validation.yaml:ro \
   -v $(pwd)/${RESULTS_DIR}:/results \
-  energy_star \
+  ai_energy_score \
   --config-name pytorch_validation \
   hydra.run.dir=/results
 

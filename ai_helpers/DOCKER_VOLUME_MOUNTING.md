@@ -12,7 +12,7 @@ docker run --gpus all --shm-size 1g \
   -v ~/.cache/huggingface:/home/user/.cache/huggingface \
   -v $(pwd)/results:/results \
   -e HOME=/home/user \
-  energy_star \
+  ai_energy_score \
   --config-name text_generation \
   backend.model=openai/gpt-oss-20b
 ```
@@ -111,7 +111,7 @@ docker run --gpus all --shm-size 1g \
   -v $HOME:$HOME \
   -v $(pwd)/results:/results \
   -e HOME=$HOME \
-  energy_star \
+  ai_energy_score \
   --config-name text_generation \
   backend.model=openai/gpt-oss-20b
 ```
@@ -132,7 +132,7 @@ docker run --gpus all --shm-size 1g \
   -v $HF_HOME:/home/user/.cache/huggingface \
   -v $(pwd)/results:/results \
   -e HOME=/home/user \
-  energy_star \
+  ai_energy_score \
   --config-name text_generation \
   backend.model=openai/gpt-oss-20b
 ```
@@ -179,7 +179,7 @@ docker run --gpus all --shm-size 1g \
   -v $(pwd)/results:/results \
   -e HOME=/home/user \
   -e BENCHMARK_BACKEND=pytorch \
-  energy_star \
+  ai_energy_score \
   --config-name text_generation \
   scenario.num_samples=100 \
   backend.model=openai/gpt-oss-20b
@@ -195,7 +195,7 @@ docker run --gpus all --shm-size 1g \
   -e HOME=/home/user \
   -e BENCHMARK_BACKEND=vllm \
   -e VLLM_ENDPOINT=http://host.docker.internal:8000/v1 \
-  energy_star \
+  ai_energy_score \
   --config-name text_generation \
   backend.model=openai/gpt-oss-120b
 ```
@@ -224,7 +224,7 @@ docker run --gpus all --shm-size 1g \
   -v ~/.cache/huggingface:/home/user/.cache/huggingface \
   -v $(pwd)/results:/results \
   -e HOME=/home/user \
-  energy_star \
+  ai_energy_score \
   --config-name <config> \
   backend.model=<model>
 ```

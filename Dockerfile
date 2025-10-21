@@ -23,7 +23,7 @@ RUN git clone https://github.com/huggingface/optimum-benchmark.git /optimum-benc
 
 # Install ai_energy_benchmarks (optional backend)
 # Option A: Install from TestPyPI (for ppe testing)
-ARG AI_ENERGY_BENCHMARKS_VERSION=0.0.1rc1
+ARG AI_ENERGY_BENCHMARKS_VERSION=0.0.1
 RUN pip install --index-url https://test.pypi.org/simple/ \
     --extra-index-url https://pypi.org/simple/ \
     ai_energy_benchmarks==${AI_ENERGY_BENCHMARKS_VERSION}

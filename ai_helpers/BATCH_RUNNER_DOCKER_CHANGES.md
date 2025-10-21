@@ -51,7 +51,7 @@ batch_runner.py (PyTorch)
     ↓
 run_docker.sh
     ↓
-Docker Container (energy_star image)
+Docker Container (ai_energy_score image)
     ↓
 entrypoint.sh
     ↓
@@ -102,7 +102,7 @@ This test:
 ## Environment Variables
 
 The docker execution respects these environment variables:
-- `DOCKER_IMAGE`: Docker image to use (default: "energy_star")
+- `DOCKER_IMAGE`: Docker image to use (default: "ai_energy_score")
 - `RESULTS_DIR`: Results directory (auto-set to run_dir)
 - `HF_HOME`: HuggingFace cache location (default: ~/.cache/huggingface)
 - `BENCHMARK_BACKEND`: Backend type (auto-set to "pytorch")

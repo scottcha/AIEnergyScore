@@ -49,7 +49,7 @@ This implementation enables AIEnergyScore to switch between different benchmark 
 
 ```bash
 # No changes needed - uses optimum-benchmark by default
-docker run --gpus all energy_star \
+docker run --gpus all ai_energy_score \
   --config-name text_generation \
   backend.model=openai/gpt-oss-120b
 ```
@@ -60,7 +60,7 @@ docker run --gpus all energy_star \
 # Switch to ai_energy_benchmarks PyTorch backend
 docker run --gpus all \
   -e BENCHMARK_BACKEND=pytorch \
-  energy_star \
+  ai_energy_score \
   --config-name text_generation \
   backend.model=openai/gpt-oss-120b
 ```
@@ -76,7 +76,7 @@ vllm serve openai/gpt-oss-120b --port 8000
 docker run --gpus all \
   -e BENCHMARK_BACKEND=vllm \
   -e VLLM_ENDPOINT=http://host.docker.internal:8000/v1 \
-  energy_star \
+  ai_energy_score \
   --config-name text_generation \
   backend.model=openai/gpt-oss-120b
 ```
@@ -137,7 +137,7 @@ Both formats are converted to the same output files:
 
 ### Invalid Backend
 ```bash
-docker run --gpus all -e BENCHMARK_BACKEND=invalid energy_star ...
+docker run --gpus all -e BENCHMARK_BACKEND=invalid ai_energy_score ...
 # Output:
 # Error: Unknown BENCHMARK_BACKEND=invalid
 # Valid options: optimum, pytorch, vllm
@@ -146,7 +146,7 @@ docker run --gpus all -e BENCHMARK_BACKEND=invalid energy_star ...
 
 ### Missing vLLM Endpoint
 ```bash
-docker run --gpus all -e BENCHMARK_BACKEND=vllm energy_star ...
+docker run --gpus all -e BENCHMARK_BACKEND=vllm ai_energy_score ...
 # Output:
 # Error: VLLM_ENDPOINT environment variable must be set for vLLM backend
 # Exit code: 1
@@ -165,17 +165,17 @@ docker run --gpus all -e BENCHMARK_BACKEND=vllm energy_star ...
 
 ```bash
 # Test 1: Default (optimum)
-docker run --gpus all energy_star --config-name text_generation
+docker run --gpus all ai_energy_score --config-name text_generation
 
 # Test 2: PyTorch backend
-docker run --gpus all -e BENCHMARK_BACKEND=pytorch energy_star --config-name text_generation
+docker run --gpus all -e BENCHMARK_BACKEND=pytorch ai_energy_score --config-name text_generation
 
 # Test 3: vLLM backend (requires server)
 vllm serve openai/gpt-oss-120b &
 docker run --gpus all \
   -e BENCHMARK_BACKEND=vllm \
   -e VLLM_ENDPOINT=http://localhost:8000/v1 \
-  energy_star --config-name text_generation
+  ai_energy_score --config-name text_generation
 ```
 
 ### Validate Results

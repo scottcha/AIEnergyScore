@@ -11,7 +11,7 @@ mkdir -p validation_results
 docker run --gpus all \
   --shm-size 8g \
   -v $(pwd)/validation_results:/results \
-  energy_star \
+  ai_energy_score \
   --config-name text_generation \
   hydra.run.dir=/results
 ```
@@ -24,7 +24,7 @@ This will use whatever defaults are in the `reasoning_test` branch config.
 docker run --gpus all \
   --shm-size 8g \
   -v $(pwd)/validation_results:/results \
-  energy_star \
+  ai_energy_score \
   --config-name text_generation \
   backend.model=openai/gpt-oss-20b \
   backend.processor=openai/gpt-oss-20b \
@@ -36,7 +36,7 @@ docker run --gpus all \
 List available configs in the container:
 
 ```bash
-docker run --gpus all --rm energy_star ls -la /optimum-benchmark/energy_star/
+docker run --gpus all --rm ai_energy_score ls -la /optimum-benchmark/energy_star/
 ```
 
 ## Option 4: Inspect the Config
@@ -44,7 +44,7 @@ docker run --gpus all --rm energy_star ls -la /optimum-benchmark/energy_star/
 See what the actual config looks like:
 
 ```bash
-docker run --gpus all --rm energy_star cat /optimum-benchmark/energy_star/text_generation.yaml
+docker run --gpus all --rm ai_energy_score cat /optimum-benchmark/energy_star/text_generation.yaml
 ```
 
 ## Debugging
@@ -54,13 +54,13 @@ If you get config errors, try:
 ```bash
 # See full config structure
 docker run --gpus all --rm \
-  energy_star \
+  ai_energy_score \
   --config-name text_generation \
   --cfg job
 
 # See available overrides
 docker run --gpus all --rm \
-  energy_star \
+  ai_energy_score \
   --config-name text_generation \
   --help
 ```
