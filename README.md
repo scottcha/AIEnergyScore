@@ -230,6 +230,77 @@ pytest
 
 Use `pytest -m e2e` to run only the end-to-end suites; omit the marker filter to execute the full test collection.
 
+### Batch Testing Multiple Models
+
+The `batch_runner.py` script enables testing multiple models from a CSV configuration file with minimal setup.
+
+#### Quick Start (Docker Backend)
+
+For the PyTorch backend (default), you only need `pandas` installed locally - all AI work runs in Docker:
+
+```bash
+cd AIEnergyScore
+
+# Create virtual environment and install minimal dependencies
+python3 -m venv .venv
+source .venv/bin/activate
+pip install pandas
+
+# Run batch tests (uses Docker internally)
+python batch_runner.py \
+  --model-name "gemma" \
+  --output-dir ./results/gemma \
+  --num-prompts 10
+```
+
+#### Usage Examples
+
+```bash
+# Test all models matching "gpt-oss"
+python batch_runner.py --model-name "gpt-oss" --num-prompts 20
+
+# Test specific model class (A, B, or C)
+python batch_runner.py --class A --num-prompts 50
+
+# Test models with reasoning enabled
+python batch_runner.py --reasoning-state "On" --num-prompts 10
+
+# Custom CSV and output directory
+python batch_runner.py \
+  --csv my_models.csv \
+  --output-dir ./custom_results \
+  --num-prompts 100
+```
+
+#### Command-Line Options
+
+| Option | Description | Default |
+|--------|-------------|---------|
+| `--csv` | Path to models CSV file | `AI Energy Score (Oct 2025) - Models.csv` |
+| `--output-dir` | Output directory for results | `./batch_results` |
+| `--backend` | Backend type: `pytorch`, `vllm` | `pytorch` |
+| `--num-prompts` | Number of prompts to run | All prompts in dataset |
+| `--model-name` | Filter by model name (substring) | - |
+| `--class` | Filter by model class (A/B/C) | - |
+| `--reasoning-state` | Filter by reasoning state | - |
+
+#### Using vLLM Backend
+
+For the vLLM backend (direct execution), you need the full `ai_energy_benchmarks` package:
+
+```bash
+# Install ai_energy_benchmarks from parent directory
+pip install -e ../ai_energy_benchmarks[pytorch]
+pip install -r requirements.txt
+
+# Run with vLLM backend (requires vLLM server running)
+python batch_runner.py \
+  --backend vllm \
+  --endpoint http://localhost:8000/v1 \
+  --model-name "gpt-oss" \
+  --num-prompts 10
+```
+
 #### vLLM Backend (ai_energy_benchmarks)
 
 ```bash

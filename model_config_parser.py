@@ -14,8 +14,10 @@ from typing import Any, Dict, List, Optional
 
 import pandas as pd
 
-from ai_energy_benchmarks.formatters.harmony import HarmonyFormatter
-from ai_energy_benchmarks.formatters.registry import FormatterRegistry
+# Optional imports - only needed for vLLM backend (not for Docker/PyTorch backend)
+# These will be imported lazily when needed
+HarmonyFormatter = None
+FormatterRegistry = None
 
 
 @dataclass
@@ -47,8 +49,21 @@ class ModelConfigParser:
         if not self.csv_path.exists():
             raise FileNotFoundError(f"CSV file not found: {csv_path}")
 
-        # Initialize formatter registry for reasoning format detection
-        self.formatter_registry = FormatterRegistry()
+        # Try to initialize formatter registry (optional - only needed for vLLM backend)
+        # For PyTorch backend (Docker execution), this is not needed
+        self.formatter_registry = None
+        self._harmony_formatter_class = None
+
+        try:
+            from ai_energy_benchmarks.formatters.harmony import HarmonyFormatter
+            from ai_energy_benchmarks.formatters.registry import FormatterRegistry
+
+            self.formatter_registry = FormatterRegistry()
+            self._harmony_formatter_class = HarmonyFormatter
+        except ImportError:
+            # ai_energy_benchmarks not installed - will use legacy parsing
+            # This is OK for Docker/PyTorch backend which doesn't need it
+            pass
 
     def parse(self) -> List[ModelConfig]:
         """Parse CSV file and return list of model configurations.
@@ -139,26 +154,32 @@ class ModelConfigParser:
         if not template or "n/a" in template:
             return
 
-        # Get formatter from registry
-        formatter = self.formatter_registry.get_formatter(config.model_id)
+        # If formatter registry is available, use it
+        if self.formatter_registry is not None:
+            # Get formatter from registry
+            formatter = self.formatter_registry.get_formatter(config.model_id)
 
-        if formatter:
-            # Extract reasoning parameters from template
-            reasoning_params = self._extract_reasoning_params(template)
-            config.reasoning_params = reasoning_params
+            if formatter:
+                # Extract reasoning parameters from template
+                reasoning_params = self._extract_reasoning_params(template)
+                config.reasoning_params = reasoning_params
 
-            # Set flags based on formatter type
-            if isinstance(formatter, HarmonyFormatter):
-                config.use_harmony = True
+                # Set flags based on formatter type
+                if self._harmony_formatter_class and isinstance(formatter, self._harmony_formatter_class):
+                    config.use_harmony = True
+            else:
+                # DEPRECATED: Fallback to old hardcoded logic
+                warnings.warn(
+                    f"Model {config.model_id} not found in FormatterRegistry. "
+                    f"Using deprecated hardcoded format detection. "
+                    f"Please add model to reasoning_formats.yaml.",
+                    DeprecationWarning,
+                    stacklevel=2,
+                )
+                self._legacy_parse_chat_template(config)
         else:
-            # DEPRECATED: Fallback to old hardcoded logic
-            warnings.warn(
-                f"Model {config.model_id} not found in FormatterRegistry. "
-                f"Using deprecated hardcoded format detection. "
-                f"Please add model to reasoning_formats.yaml.",
-                DeprecationWarning,
-                stacklevel=2,
-            )
+            # FormatterRegistry not available (ai_energy_benchmarks not installed)
+            # Use legacy parsing - this is fine for Docker/PyTorch backend
             self._legacy_parse_chat_template(config)
 
     def _extract_reasoning_params(self, template: str) -> Optional[Dict[str, Any]]:
