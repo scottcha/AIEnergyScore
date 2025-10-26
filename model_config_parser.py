@@ -209,6 +209,13 @@ class ModelConfigParser:
             params["enable_thinking"] = True
         elif "enable_thinking=false" in template:
             params["enable_thinking"] = False
+        # Handle system prompt flags like /think (for Hunyuan, SmolLM, etc.)
+        elif "/think" in template and "no_think" not in template:
+            # /think indicates thinking should be enabled
+            params["enable_thinking"] = True
+        elif "/no_think" in template:
+            # /no_think indicates thinking should be disabled
+            params["enable_thinking"] = False
 
         return params if params else None
 
