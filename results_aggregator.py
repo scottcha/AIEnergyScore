@@ -27,7 +27,8 @@ class ResultsAggregator:
         "successful_prompts",
         "failed_prompts",
         "total_duration_seconds",
-        "avg_latency_seconds",
+        "avg_total_time",  # Renamed from avg_latency_seconds for clarity
+        "avg_time_to_first_token",  # NEW: Time to first token metric
         "total_tokens",
         "total_prompt_tokens",
         "total_completion_tokens",
@@ -81,7 +82,8 @@ class ResultsAggregator:
         successful_prompts = summary.get("successful_prompts", 0)
         failed_prompts = summary.get("failed_prompts", 0)
         total_duration = summary.get("total_duration_seconds", 0)
-        avg_latency = summary.get("avg_latency_seconds", 0)
+        avg_latency = summary.get("avg_latency_seconds", 0)  # Backend still uses this name
+        avg_ttft = summary.get("avg_time_to_first_token", 0)  # NEW: TTFT metric
         total_tokens = summary.get("total_tokens", 0)
         total_prompt_tokens = summary.get("total_prompt_tokens", 0)
         total_completion_tokens = summary.get("total_completion_tokens", 0)
@@ -112,7 +114,8 @@ class ResultsAggregator:
             "successful_prompts": successful_prompts,
             "failed_prompts": failed_prompts,
             "total_duration_seconds": f"{total_duration:.2f}",
-            "avg_latency_seconds": f"{avg_latency:.4f}",
+            "avg_total_time": f"{avg_latency:.4f}",  # Renamed column
+            "avg_time_to_first_token": f"{avg_ttft:.4f}",  # NEW: TTFT metric
             "total_tokens": total_tokens,
             "total_prompt_tokens": total_prompt_tokens,
             "total_completion_tokens": total_completion_tokens,
@@ -149,7 +152,8 @@ class ResultsAggregator:
             "successful_prompts": 0,
             "failed_prompts": 0,
             "total_duration_seconds": f"{duration:.2f}",
-            "avg_latency_seconds": "0.0000",
+            "avg_total_time": "0.0000",  # Renamed column
+            "avg_time_to_first_token": "0.0000",  # NEW: TTFT metric (0 for failed runs)
             "total_tokens": 0,
             "total_prompt_tokens": 0,
             "total_completion_tokens": 0,
@@ -240,6 +244,7 @@ def main():
             "failed_prompts": 0,
             "total_duration_seconds": 30.5,
             "avg_latency_seconds": 3.05,
+            "avg_time_to_first_token": 0.15,  # NEW: TTFT metric
             "total_tokens": 1500,
             "total_prompt_tokens": 500,
             "total_completion_tokens": 1000,
@@ -272,6 +277,7 @@ def main():
             "failed_prompts": 1,
             "total_duration_seconds": 45.2,
             "avg_latency_seconds": 5.02,
+            "avg_time_to_first_token": 0.22,  # NEW: TTFT metric
             "total_tokens": 2000,
             "total_prompt_tokens": 600,
             "total_completion_tokens": 1400,
