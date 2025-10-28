@@ -12,7 +12,7 @@ echo ""
 cd ~/src/
 
 # Default version (can be overridden)
-AI_ENERGY_BENCHMARKS_VERSION=${AI_ENERGY_BENCHMARKS_VERSION:-0.0.2}
+AI_ENERGY_BENCHMARKS_VERSION=${AI_ENERGY_BENCHMARKS_VERSION:-0.0.3}
 
 echo "Using ai_energy_benchmarks version: ${AI_ENERGY_BENCHMARKS_VERSION}"
 echo ""
