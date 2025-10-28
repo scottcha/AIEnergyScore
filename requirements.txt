@@ -1,9 +1,9 @@
 accelerate==1.10.0
 codecarbon==3.0.4
 datasets==4.0.0
-git+https://github.com/huggingface/diffusers.git
+diffusers==0.32.0
 huggingface-hub>=0.34.4
-git+https://github.com/huggingface/transformers.git
+transformers==4.47.1
 librosa==0.10.1
 omegaconf==2.3.0
 pandas>=2.0.0
