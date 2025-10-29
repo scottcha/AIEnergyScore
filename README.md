@@ -84,6 +84,8 @@ The easiest way to authenticate is using the HuggingFace CLI:
 ```bash
 # One-time setup: login to HuggingFace
 huggingface-cli login
+or
+hf auth login 
 
 # Then use normally - token is automatically mounted
 ./run_docker.sh --config-name text_generation backend.model=google/gemma-3-1b-pt
