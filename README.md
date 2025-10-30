@@ -29,14 +29,6 @@ The Docker image includes both optimum-benchmark and ai_energy_benchmarks. Use t
 ./build.sh
 ```
 
-Or build manually from the parent directory:
-
-```bash
-docker build -f AIEnergyScore/Dockerfile -t ai_energy_score .
-```
-
-**Note:** The build must be run from (parent directory) to access both `AIEnergyScore/` and `ai_energy_benchmarks/` directories.
-
 #### Quick Start with Helper Script
 
 For convenience, use the provided helper script that handles all volume mounts automatically:
@@ -67,8 +59,8 @@ The helper script automatically:
 # Quick test with 5 samples
 ./run_docker.sh --num-samples 5 --config-name text_generation backend.model=openai/gpt-oss-20b
 
-# Use PyTorch backend with 50 samples
-BENCHMARK_BACKEND=pytorch ./run_docker.sh -n 50 --config-name text_generation backend.model=openai/gpt-oss-20b
+# Use Optimum backend with HuggingFace optimum-benchmark
+BENCHMARK_BACKEND=optimum ./run_docker.sh --config-name text_generation backend.model=openai/gpt-oss-20b
 ```
 
 For advanced configuration, see [Docker Volume Mounting Guide](ai_helpers/DOCKER_VOLUME_MOUNTING.md).
@@ -148,7 +140,6 @@ docker run --gpus all --shm-size 1g \
   -v ~/.cache/huggingface:/home/user/.cache/huggingface \
   -v $(pwd)/results:/results \
   -e HOME=/home/user \
-  -e BENCHMARK_BACKEND=pytorch \
   ai_energy_score \
   --config-name text_generation \
   scenario.num_samples=3 \
@@ -176,11 +167,11 @@ AIEnergyScore supports multiple benchmark backends for flexibility and validatio
 
 | Backend | Tool | Load Generation | Model Location | Use Case |
 |---------|------|-----------------|----------------|----------|
-| `optimum` (default) | optimum-benchmark | optimum-benchmark generates load | Local GPU (in container) | Official AIEnergyScore benchmarks |
-| `pytorch` | ai_energy_benchmarks | ai_energy_benchmarks generates load | Local GPU (in container) | Validation, comparison testing |
+| `pytorch` (default) | ai_energy_benchmarks | ai_energy_benchmarks generates load | Local GPU (in container) | Standard AIEnergyScore benchmarks |
+| `optimum` | optimum-benchmark | optimum-benchmark generates load | Local GPU (in container) | Alternative HuggingFace backend |
 | `vllm` | ai_energy_benchmarks | ai_energy_benchmarks generates load | External vLLM server | Production load testing |
 
-#### Default Usage (optimum-benchmark)
+#### Default Usage (PyTorch/ai_energy_benchmarks)
 
 ```bash
 # Standard AIEnergyScore benchmark - run as current user with cache mounting
@@ -191,6 +182,7 @@ docker run --gpus all --shm-size 1g \
   -e HOME=/home/user \
   ai_energy_score \
   --config-name text_generation \
+  scenario.num_samples=20 \
   backend.model=openai/gpt-oss-120b
 ```
 
@@ -200,25 +192,77 @@ docker run --gpus all --shm-size 1g \
 - `--user $(id -u):$(id -g)` - Run as current user (not root) for proper file permissions
 - `-e HOME=/home/user` - Set HOME environment variable for HuggingFace cache location
 
-#### PyTorch Backend (ai_energy_benchmarks)
+#### Optimum Backend (optimum-benchmark)
 
 ```bash
-# Use ai_energy_benchmarks with PyTorch backend for validation
+# Use HuggingFace optimum-benchmark backend
 docker run --gpus all --shm-size 1g \
   --user $(id -u):$(id -g) \
   -v ~/.cache/huggingface:/home/user/.cache/huggingface \
   -v $(pwd)/results:/results \
   -e HOME=/home/user \
-  -e BENCHMARK_BACKEND=pytorch \
+  -e BENCHMARK_BACKEND=optimum \
   ai_energy_score \
   --config-name text_generation \
-  scenario.num_samples=100 \
   backend.model=openai/gpt-oss-20b
 ```
 
 
 
 **Note:** With `BENCHMARK_BACKEND=pytorch`, ai_energy_benchmarks loads the model and generates inference load directly on the GPU, just like optimum-benchmark.
+
+## Example: Comparing Energy Efficiency Across Models
+
+AIEnergyScore makes it easy to compare the energy efficiency of different models. Here are practical examples:
+
+### Compare Small vs Large Models
+
+```bash
+cd AIEnergyScore
+
+# Benchmark a smaller model (Class A: ~3B parameters)
+./run_docker.sh -n 100 --config-name text_generation backend.model=HuggingFaceTB/SmolLM3-3B
+
+# Benchmark a larger model (Class B: ~20B parameters)
+./run_docker.sh -n 100 --config-name text_generation backend.model=openai/gpt-oss-20b
+```
+
+### Compare Different Model Families
+
+```bash
+# Benchmark Gemma family model
+./run_docker.sh -n 100 --config-name text_generation backend.model=google/gemma-3-4b-pt
+
+# Benchmark Qwen family model
+./run_docker.sh -n 100 --config-name text_generation backend.model=Qwen/Qwen2.5-Coder-14B
+
+# Benchmark Mistral family model
+./run_docker.sh -n 100 --config-name text_generation backend.model=mistralai/Mistral-Nemo-Instruct-2407
+```
+
+### Compare Reasoning vs Non-Reasoning Modes
+
+```bash
+# Test with reasoning disabled
+./run_docker.sh -n 50 --config-name text_generation backend.model=openai/gpt-oss-20b
+
+# Test with low reasoning effort
+./run_docker.sh -n 50 --config-name text_generation_gptoss_reasoning_low backend.model=openai/gpt-oss-20b
+
+# Test with high reasoning effort
+./run_docker.sh -n 50 --config-name text_generation_gptoss_reasoning_high backend.model=openai/gpt-oss-20b
+```
+
+### Compare Different Models
+
+```bash
+# Run benchmarks with default PyTorch backend
+./run_docker.sh -n 100 --config-name text_generation backend.model=openai/gpt-oss-20b
+
+./run_docker.sh -n 100 --config-name text_generation backend.model=openai/gpt-oss-120b
+```
+
+After running these benchmarks, results are saved in `./results/` with energy consumption data in `GPU_ENERGY_WH.txt` and `GPU_ENERGY_SUMMARY.json` files.
 
 ### Running Tests
 
@@ -327,7 +371,7 @@ docker run --gpus all --shm-size 1g \
 
 | Variable | Required | Default | Description |
 |----------|----------|---------|-------------|
-| `BENCHMARK_BACKEND` | No | `optimum` | Backend selection: `optimum`, `pytorch`, `vllm` |
+| `BENCHMARK_BACKEND` | No | `pytorch` | Backend selection: `optimum`, `pytorch`, `vllm` |
 | `VLLM_ENDPOINT` | Yes (for vLLM) | - | vLLM server endpoint (e.g., `http://localhost:8000/v1`) |
 
 All backends produce compatible output files (`GPU_ENERGY_WH.txt`, `GPU_ENERGY_SUMMARY.json`) that can be submitted to the AIEnergyScore portal.

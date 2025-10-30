@@ -2,6 +2,7 @@
 # Build AIEnergyScore Docker image with ai_energy_benchmarks support
 #
 # This script builds the Docker image, installing ai_energy_benchmarks from TestPyPI
+# The version is specified in AIEnergyScore/requirements.txt
 
 set -e
 
@@ -11,16 +12,9 @@ echo ""
 
 cd ~/src/
 
-# Default version (can be overridden)
-AI_ENERGY_BENCHMARKS_VERSION=${AI_ENERGY_BENCHMARKS_VERSION:-0.0.3}
-
-echo "Using ai_energy_benchmarks version: ${AI_ENERGY_BENCHMARKS_VERSION}"
-echo ""
-
 # Build Docker image
 docker build \
     -f AIEnergyScore/Dockerfile \
-    --build-arg AI_ENERGY_BENCHMARKS_VERSION=${AI_ENERGY_BENCHMARKS_VERSION} \
     -t ai_energy_score \
     .
 

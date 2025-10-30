@@ -16,25 +16,18 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-ins
         rm -rf /var/lib/apt/lists/*
 
 COPY AIEnergyScore/requirements.txt requirements.txt
-RUN pip install -r requirements.txt
+# Install requirements including ai_energy_benchmarks from TestPyPI
+RUN pip install --index-url https://test.pypi.org/simple/ \
+    --extra-index-url https://pypi.org/simple/ \
+    -r requirements.txt
 
 # Install optimum-benchmark (default backend)
 RUN git clone https://github.com/huggingface/optimum-benchmark.git /optimum-benchmark && cd /optimum-benchmark && git checkout reasoning_test && pip install -e .
 
-# Install ai_energy_benchmarks (optional backend)
-# Option A: Install from TestPyPI (for ppe testing)
-ARG AI_ENERGY_BENCHMARKS_VERSION=0.0.3
-RUN pip install --index-url https://test.pypi.org/simple/ \
-    --extra-index-url https://pypi.org/simple/ \
-    ai_energy_benchmarks==${AI_ENERGY_BENCHMARKS_VERSION}
-
+# Alternative installation methods (for development):
 # Option B: Install from local wheel (for local development) - WITH TTFT TRACKING
 # COPY ai_energy_benchmarks/dist/ai_energy_benchmarks-*.whl /tmp/
 # RUN pip install /tmp/ai_energy_benchmarks-*.whl && rm -rf /tmp/*.whl
-
-# Option C: Install from production PyPI (future)
-# ARG AI_ENERGY_BENCHMARKS_VERSION=0.0.1
-# RUN pip install ai_energy_benchmarks==${AI_ENERGY_BENCHMARKS_VERSION}
 
 COPY AIEnergyScore/check_h100.py /check_h100.py
 COPY AIEnergyScore/entrypoint.sh /entrypoint.sh

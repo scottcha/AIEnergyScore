@@ -4,9 +4,7 @@
 #
 # Options:
 #   -n, --num-samples NUM    Number of prompts to test (default: 20)
-#                           Note: Only applies to pytorch/vllm backends.
-#                           For optimum backend, override via command line:
-#                           scenario.num_samples=NUM
+#                           Applies to all backends (pytorch, vllm, optimum)
 #   -h, --help              Show this help message
 #
 # Environment Variables:
@@ -14,7 +12,7 @@
 #   RESULTS_DIR             Results directory (default: ./results)
 #   HF_HOME                 HuggingFace cache location (default: ~/.cache/huggingface)
 #   HF_TOKEN                HuggingFace API token for gated models (optional)
-#   BENCHMARK_BACKEND       Backend selection: optimum, pytorch, vllm (default: optimum)
+#   BENCHMARK_BACKEND       Backend selection: optimum, pytorch, vllm (default: pytorch)
 #
 # Authentication for Gated Models:
 #   This script automatically detects and mounts your HuggingFace token for
@@ -93,7 +91,7 @@ if [ "${HF_AUTH_AVAILABLE}" = false ]; then
 fi
 
 # Check if running with vLLM backend (doesn't need HF cache mount)
-BACKEND="${BENCHMARK_BACKEND:-optimum}"
+BACKEND="${BENCHMARK_BACKEND:-pytorch}"
 VOLUME_MOUNTS="-v ${RESULTS_DIR}:/results"
 
 if [ "$BACKEND" != "vllm" ]; then
@@ -112,11 +110,7 @@ echo "AIEnergyScore Docker Runner"
 echo "============================================"
 echo "Image:         ${IMAGE_NAME}"
 echo "Backend:       ${BACKEND}"
-if [ "$BACKEND" = "pytorch" ] || [ "$BACKEND" = "vllm" ]; then
-    echo "Num Samples:   ${NUM_SAMPLES}"
-else
-    echo "Num Samples:   (using config default - override with scenario.num_samples=NUM)"
-fi
+echo "Num Samples:   ${NUM_SAMPLES}"
 echo "Results dir:   ${RESULTS_DIR}"
 if [ "$BACKEND" != "vllm" ]; then
     echo "HF Cache:      ${HF_CACHE}"
@@ -137,10 +131,9 @@ if [ -n "${HF_TOKEN}" ]; then
 fi
 
 # Build additional arguments
-# For pytorch/vllm backends (ai_energy_benchmarks), append scenario.num_samples
-# For optimum backend, let user override via command line if needed
+# For all backends, append scenario.num_samples from -n flag (default: 20)
 EXTRA_ARGS=()
-if [ "$BACKEND" = "pytorch" ] || [ "$BACKEND" = "vllm" ]; then
+if [ "$BACKEND" = "pytorch" ] || [ "$BACKEND" = "vllm" ] || [ "$BACKEND" = "optimum" ]; then
     EXTRA_ARGS+=("scenario.num_samples=${NUM_SAMPLES}")
 fi
 

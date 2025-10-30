@@ -2,7 +2,7 @@
 set -e
 
 RESULTS_DIR="/results"
-BENCHMARK_BACKEND="${BENCHMARK_BACKEND:-optimum}"  # Default to optimum
+BENCHMARK_BACKEND="${BENCHMARK_BACKEND:-pytorch}"  # Default to pytorch (ai_energy_benchmarks)
 
 python /check_h100.py
 if [[ $? = 0 ]]; then

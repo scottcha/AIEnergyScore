@@ -30,18 +30,18 @@ cd AIEnergyScore
 - `DOCKER_IMAGE` - Override default image name (default: `ai_energy_score`)
 - `RESULTS_DIR` - Custom results directory (default: `./results`)
 - `HF_HOME` - Custom HuggingFace cache location (default: `~/.cache/huggingface`)
-- `BENCHMARK_BACKEND` - Backend selection: `optimum`, `pytorch`, `vllm` (default: `optimum`)
+- `BENCHMARK_BACKEND` - Backend selection: `optimum`, `pytorch`, `vllm` (default: `pytorch`)
 
 **Examples**:
 ```bash
-# Default 20 samples
+# Default: PyTorch backend with 20 samples
 ./run_docker.sh --config-name text_generation backend.model=openai/gpt-oss-20b
 
-# Test with 100 samples
+# PyTorch backend with 100 samples
 ./run_docker.sh -n 100 --config-name text_generation backend.model=openai/gpt-oss-120b
 
-# PyTorch backend with 50 samples
-BENCHMARK_BACKEND=pytorch ./run_docker.sh -n 50 --config-name text_generation backend.model=openai/gpt-oss-20b
+# Optimum backend (HuggingFace optimum-benchmark)
+BENCHMARK_BACKEND=optimum ./run_docker.sh --config-name text_generation backend.model=openai/gpt-oss-20b
 
 # Custom results location
 RESULTS_DIR=/tmp/my_results ./run_docker.sh --config-name text_generation backend.model=openai/gpt-oss-120b

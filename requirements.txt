@@ -9,3 +9,4 @@ omegaconf==2.3.0
 pandas>=2.0.0
 tiktoken>=0.12.0
 einops
+ai_energy_benchmarks==0.0.4
