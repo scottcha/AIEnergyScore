@@ -1,0 +1,30 @@
+# Development and deployment tools for AIEnergyScore
+# These dependencies are needed to run scripts that manage containers and models
+# but are NOT required inside the Docker container itself.
+#
+# Install with: pip install -r requirements-dev.txt
+
+# HuggingFace CLI for model downloads and authentication
+huggingface-hub[cli]>=0.34.4
+
+# Docker Python SDK (if needed for Docker management scripts)
+docker
+
+# Environment configuration
+python-dotenv
+
+# Configuration file parsing (YAML)
+pyyaml
+
+# Pandas for batch_runner.py and CSV processing
+pandas>=2.0.0
+
+# Testing tools
+pytest
+pytest-cov
+omegaconf
+
+# Code quality tools (aligns with pre-commit)
+ruff
+mypy
+black

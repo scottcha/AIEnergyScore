@@ -34,7 +34,7 @@ set -e
 IMAGE_NAME="${DOCKER_IMAGE:-ai_energy_score}"
 RESULTS_DIR="${RESULTS_DIR:-$(pwd)/results}"
 HF_CACHE="${HF_HOME:-$HOME/.cache/huggingface}"
-HF_TOKEN_FILE="${HOME}/.huggingface/token"
+HF_TOKEN_FILE="${HOME}/.cache/huggingface/token"
 NUM_SAMPLES=20
 
 # Function to show help

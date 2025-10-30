@@ -6,7 +6,6 @@ Parses the "AI Energy Score (Oct 2025) - Models.csv" file and extracts
 model configurations including reasoning parameters and special formatting requirements.
 """
 
-import re
 import warnings
 from dataclasses import dataclass
 from pathlib import Path
@@ -138,6 +137,22 @@ class ModelConfigParser:
 
         return configs
 
+    def _is_model_in_registry(self, model_id: str) -> bool:
+        """Check if a model exists in the FormatterRegistry.
+
+        Args:
+            model_id: Model identifier to check
+
+        Returns:
+            True if model is registered (even with null formatter), False otherwise
+        """
+        if self.formatter_registry is None:
+            return False
+
+        # Use the same logic as FormatterRegistry._find_model_config
+        model_config = self.formatter_registry._find_model_config(model_id)
+        return model_config is not None
+
     def _parse_chat_template(self, config: ModelConfig) -> None:
         """Parse chat template and populate reasoning params and flags.
 
@@ -148,7 +163,6 @@ class ModelConfigParser:
             config: ModelConfig to populate (modified in-place)
         """
         template = config.chat_template.lower()
-        model_id_lower = config.model_id.lower()
 
         # Skip if N/A or empty
         if not template or "n/a" in template:
@@ -165,18 +179,26 @@ class ModelConfigParser:
                 config.reasoning_params = reasoning_params
 
                 # Set flags based on formatter type
-                if self._harmony_formatter_class and isinstance(formatter, self._harmony_formatter_class):
+                if self._harmony_formatter_class and isinstance(
+                    formatter, self._harmony_formatter_class
+                ):
                     config.use_harmony = True
             else:
-                # DEPRECATED: Fallback to old hardcoded logic
-                warnings.warn(
-                    f"Model {config.model_id} not found in FormatterRegistry. "
-                    f"Using deprecated hardcoded format detection. "
-                    f"Please add model to reasoning_formats.yaml.",
-                    DeprecationWarning,
-                    stacklevel=2,
-                )
-                self._legacy_parse_chat_template(config)
+                # Check if model is in registry but has null formatter (intentional design)
+                if self._is_model_in_registry(config.model_id):
+                    # Model is registered with null formatter (e.g., Qwen uses chat template)
+                    # Use legacy parsing without warning - this is expected behavior
+                    self._legacy_parse_chat_template(config)
+                else:
+                    # DEPRECATED: Model truly not found in registry
+                    warnings.warn(
+                        f"Model {config.model_id} not found in FormatterRegistry. "
+                        f"Using deprecated hardcoded format detection. "
+                        f"Please add model to reasoning_formats.yaml.",
+                        DeprecationWarning,
+                        stacklevel=2,
+                    )
+                    self._legacy_parse_chat_template(config)
         else:
             # FormatterRegistry not available (ai_energy_benchmarks not installed)
             # Use legacy parsing - this is fine for Docker/PyTorch backend
@@ -237,7 +259,10 @@ class ModelConfigParser:
                 config.reasoning_params = {"reasoning_effort": "high"}
             elif "reasoning_effort: low" in template or "reasoning: low" in template:
                 config.reasoning_params = {"reasoning_effort": "low"}
-            elif "reasoning_effort: medium" in template or "reasoning: medium" in template:
+            elif (
+                "reasoning_effort: medium" in template
+                or "reasoning: medium" in template
+            ):
                 config.reasoning_params = {"reasoning_effort": "medium"}
             elif "reasoning: true" in template:
                 # Default to high if just "reasoning: true"
@@ -259,7 +284,9 @@ class ModelConfigParser:
             elif "enable_thinking=false" in template:
                 config.reasoning_params = {"enable_thinking": False}
             # Some Qwen models have thinking mode by default
-            elif "thinking mode" in template or "supports only thinking mode" in template:
+            elif (
+                "thinking mode" in template or "supports only thinking mode" in template
+            ):
                 config.prompt_prefix = "<think>"
 
         # Hunyuan models: /think prefix
@@ -356,7 +383,9 @@ def main():
     """Test the parser with sample CSV."""
     import sys
 
-    csv_path = sys.argv[1] if len(sys.argv) > 1 else "AI Energy Score (Oct 2025) - Models.csv"
+    csv_path = (
+        sys.argv[1] if len(sys.argv) > 1 else "AI Energy Score (Oct 2025) - Models.csv"
+    )
 
     parser = ModelConfigParser(csv_path)
     configs = parser.parse()

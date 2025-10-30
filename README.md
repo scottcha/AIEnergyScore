@@ -8,15 +8,70 @@ Welcome to AI Energy Score! This is an initiative to establish comparable energy
 - [Documentation](https://huggingface.github.io/AIEnergyScore/#documentation)
 - [Label Generator](https://huggingface.co/spaces/AIEnergyScore/Label)
 
+## Quick Start
+
+Get started benchmarking AI models in 5 steps:
+
+### 1. Install Development Tools
+
+```bash
+cd AIEnergyScore
+
+# Create virtual environment
+python3 -m venv .venv
+source .venv/bin/activate
+
+# Install development dependencies (for running scripts on host)
+pip install -r requirements-dev.txt
+```
+
+### 2. Authenticate with HuggingFace (Optional - for gated models)
+
+If you plan to test gated models (like Gemma or Llama):
+
+```bash
+# One-time login
+hf auth login
+```
+
+### 3. Build the Docker Image
+
+```bash
+./build.sh
+```
+
+### 4. Run Your First Benchmark
+
+```bash
+# Quick test with 20 samples (default)
+./run_docker.sh --config-name text_generation backend.model=openai/gpt-oss-20b
+
+# Or customize the number of samples
+./run_docker.sh -n 100 --config-name text_generation backend.model=openai/gpt-oss-120b
+```
+
+### 5. View Results
+
+Results are saved in `./results/` with energy data in:
+- `GPU_ENERGY_WH.txt` - Total energy consumption
+- `GPU_ENERGY_SUMMARY.json` - Detailed metrics
+
+**Next Steps:**
+- [Compare different models](#example-comparing-energy-efficiency-across-models)
+- [Run batch tests](#batch-testing-multiple-models)
+- [Submit to the leaderboard](https://huggingface.co/spaces/AIEnergyScore/submission_portal)
+
+---
+
 ## 🔐 Gated Model Support
-AIEnergyScore now supports **automatic authentication** for gated models on HuggingFace! Simply run `huggingface-cli login` once, and you'll have seamless access to models like Gemma, Llama, and other restricted models. See [Authentication for Gated Models](#authentication-for-gated-models) for details.
+AIEnergyScore supports **automatic authentication** for gated models on HuggingFace! Simply run `hf auth login` once (Step 2 above), and you'll have seamless access to models like Gemma, Llama, and other restricted models. See [Authentication for Gated Models](#authentication-for-gated-models) for details.
 
 
 ## Evaluating a Proprietary Model
 ### Hardware
 
 The Dockerfile provided in this repository is made to be used on the NVIDIA H100-80GB GPU.
-If you would like to run benchmarks on other types of hardware, we invite you to take a look at [these configuration examples](https://github.com/huggingface/optimum-benchmark/tree/main/energy_star) that can be run directly with [Optimum Benchmark](https://github.com/huggingface/optimum-benchmark/). However, evaluations completed on other hardware would not be currently compatable and comparable with the rest of the AI Energy Score data.
+If you would like to run benchmarks on other types of hardware, we invite you to take a look at [these configuration examples](./text_generation.yaml) that can be run directly with [AI Energy Benchmark](https://github.com/neuralwatt/ai_energy_benchmarks/). However, evaluations completed on other hardware would not be currently compatable and comparable with the rest of the AI Energy Score data.
 
 
 ### Usage
@@ -50,14 +105,14 @@ The helper script automatically:
 
 **Examples:**
 ```bash
-# Use default 20 samples
+# Use default 20 samples (default)
 ./run_docker.sh --config-name text_generation backend.model=openai/gpt-oss-20b
 
 # Test with 100 samples
 ./run_docker.sh -n 100 --config-name text_generation backend.model=openai/gpt-oss-120b
 
-# Quick test with 5 samples
-./run_docker.sh --num-samples 5 --config-name text_generation backend.model=openai/gpt-oss-20b
+# Full test with 1000 samples
+./run_docker.sh --num-samples 1000 --config-name text_generation backend.model=openai/gpt-oss-20b
 
 # Use Optimum backend with HuggingFace optimum-benchmark
 BENCHMARK_BACKEND=optimum ./run_docker.sh --config-name text_generation backend.model=openai/gpt-oss-20b
@@ -75,7 +130,7 @@ The easiest way to authenticate is using the HuggingFace CLI:
 
 ```bash
 # One-time setup: login to HuggingFace
-huggingface-cli login
+huggingface-cli login #legacy
 or
 hf auth login 
 
@@ -96,24 +151,7 @@ export HF_TOKEN=hf_your_token_here
 # Run with token from environment
 HF_TOKEN=hf_xxx ./run_docker.sh --config-name text_generation backend.model=google/gemma-3-1b-pt
 ```
-
-**Troubleshooting Authentication Issues**
-
-If you get a 401 error when accessing gated models:
-
-1. **Verify you have access**: Visit the model page on HuggingFace and accept the terms of use
-2. **Check authentication**: Run `huggingface-cli whoami` to verify you're logged in
-3. **Verify token file exists**: Check that `~/.huggingface/token` exists
-4. **Use diagnostic script**: Run `./ai_helpers/check_hf_auth.sh` to check your authentication status
-5. **Use HF_TOKEN**: Try passing the token explicitly via environment variable
-
 The `run_docker.sh` script will display a warning if no authentication is found when you run it.
-
-**Quick Diagnostic**
-```bash
-# Check your HuggingFace authentication status
-./ai_helpers/check_hf_auth.sh
-```
 
 #### Manual Usage
 
@@ -122,17 +160,6 @@ Alternatively, you can run your benchmark manually. **Important**: Create the re
 ```bash
 # Create results directory with proper permissions
 mkdir -p results
-
-# Run the benchmark
-docker run --gpus all --shm-size 1g \
-  --user $(id -u):$(id -g) \
-  -v ~/.cache/huggingface:/home/user/.cache/huggingface \
-  -v $(pwd)/results:/results \
-  -e HOME=/home/user \
-  ai_energy_score \
-  --config-name my_task \
-  backend.model=my_model \
-  backend.processor=my_processor
 
 #for example
 docker run --gpus all --shm-size 1g \
@@ -157,7 +184,7 @@ docker run --gpus all --shm-size 1g \
   --config-name text_generation \
   backend.model=google/gemma-3-1b-pt
 ```
-where `my_task` is the name of a task with a configuration [here](https://github.com/huggingface/optimum-benchmark/tree/main/energy_star), `my_model` is the name of your model that you want to test (which needs to be compatible with either the Transformers or the Diffusers libraries) and `my_processor` is the name of the tokenizer/processor you want to use. In most cases, `backend.model` and `backend.processor` wil lbe identical, except in cases where a model is using another model's tokenizer (e.g. from a LLaMa model).
+where `my_task` is the name of a task with a configuration [here](https://github.com/huggingface/optimum-benchmark/tree/main/energy_star), `my_model` is the name of your model that you want to test (which needs to be compatible with either the Transformers or the Diffusers libraries) and `my_processor` is the name of the tokenizer/processor you want to use. In most cases, `backend.model` and `backend.processor` will be identical, except in cases where a model is using another model's tokenizer (e.g. from a LLaMa model).
 
 The rest of the configuration is explained [here](https://github.com/huggingface/optimum-benchmark/)
 
@@ -243,26 +270,52 @@ cd AIEnergyScore
 ### Compare Reasoning vs Non-Reasoning Modes
 
 ```bash
-# Test with reasoning disabled
-./run_docker.sh -n 50 --config-name text_generation backend.model=openai/gpt-oss-20b
+# Test with reasoning disabled (fixed 10 tokens)
+./run_docker.sh -n 20 \
+  --config-name text_generation \
+  backend.model=openai/gpt-oss-20b \
+  scenario.reasoning=False
 
 # Test with low reasoning effort
-./run_docker.sh -n 50 --config-name text_generation_gptoss_reasoning_low backend.model=openai/gpt-oss-20b
+./run_docker.sh -n 20 \
+  --config-name text_generation \
+  backend.model=openai/gpt-oss-20b \
+  scenario.reasoning=True \
+  scenario.reasoning_params.reasoning_effort=low
+
+# Test with medium reasoning effort
+./run_docker.sh -n 20 \
+  --config-name text_generation \
+  backend.model=openai/gpt-oss-20b \
+  scenario.reasoning=True \
+  scenario.reasoning_params.reasoning_effort=medium
 
 # Test with high reasoning effort
-./run_docker.sh -n 50 --config-name text_generation_gptoss_reasoning_high backend.model=openai/gpt-oss-20b
+./run_docker.sh -n 20 \
+  --config-name text_generation \
+  backend.model=openai/gpt-oss-20b \
+  scenario.reasoning=True \
+  scenario.reasoning_params.reasoning_effort=high
 ```
 
-### Compare Different Models
-
-```bash
-# Run benchmarks with default PyTorch backend
-./run_docker.sh -n 100 --config-name text_generation backend.model=openai/gpt-oss-20b
-
-./run_docker.sh -n 100 --config-name text_generation backend.model=openai/gpt-oss-120b
-```
+**Note:** Reasoning parameters are configured via Hydra command-line overrides. The system automatically detects the model type and applies the appropriate formatting (e.g., Harmony format for gpt-oss models). Legacy config files (`text_generation_gptoss_reasoning_*.yaml`) are deprecated but still functional for backward compatibility.
 
 After running these benchmarks, results are saved in `./results/` with energy consumption data in `GPU_ENERGY_WH.txt` and `GPU_ENERGY_SUMMARY.json` files.
+
+### Requirements Structure
+
+AIEnergyScore uses two separate requirements files:
+
+| File | Purpose | Usage |
+|------|---------|-------|
+| `requirements.txt` | Runtime dependencies for the Docker container | Installed automatically during `./build.sh` |
+| `requirements-dev.txt` | Development/deployment tools for the host machine | Install with `pip install -r requirements-dev.txt` |
+
+**Development requirements include:**
+- `huggingface-hub[cli]` - Model downloads and authentication
+- `pandas` - Batch runner CSV processing
+- `pytest`, `ruff`, `mypy`, `black` - Testing and code quality tools
+- `docker`, `python-dotenv`, `pyyaml` - Container and config management
 
 ### Running Tests
 
@@ -270,7 +323,7 @@ After running these benchmarks, results are saved in `./results/` with energy co
 cd AIEnergyScore
 python3 -m venv .venv
 source .venv/bin/activate
-pip install -r requirements.txt pytest
+pip install -r requirements-dev.txt
 pytest
 ```
 
@@ -282,15 +335,15 @@ The `batch_runner.py` script enables testing multiple models from a CSV configur
 
 #### Quick Start (Docker Backend)
 
-For the PyTorch backend (default), you only need `pandas` installed locally - all AI work runs in Docker:
+For the PyTorch backend (default), you only need development dependencies installed locally - all AI work runs in Docker:
 
 ```bash
 cd AIEnergyScore
 
-# Create virtual environment and install minimal dependencies
+# Create virtual environment and install development dependencies
 python3 -m venv .venv
 source .venv/bin/activate
-pip install pandas
+pip install -r requirements-dev.txt
 
 # Run batch tests (uses Docker internally)
 python batch_runner.py \

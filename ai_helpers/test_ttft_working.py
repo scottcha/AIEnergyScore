@@ -35,7 +35,7 @@ def test_ttft_tracking():
     else:
         print("\n❌ FAILED: 'enable_streaming' parameter NOT found!")
         print("   The package may not be updated correctly.")
-        return False
+        assert False, "'enable_streaming' parameter NOT found in PyTorchBackend.run_inference"
 
     print()
     print("=" * 80)
@@ -71,9 +71,15 @@ def test_ttft_tracking():
     print()
     print("=" * 80)
 
-    return True
+    # Assert success at the end of the test
+    assert 'enable_streaming' in params, "TTFT tracking verification passed"
 
 
 if __name__ == "__main__":
-    success = test_ttft_tracking()
-    sys.exit(0 if success else 1)
+    try:
+        test_ttft_tracking()
+        print("\n✅ All checks passed!")
+        sys.exit(0)
+    except AssertionError as e:
+        print(f"\n❌ Test failed: {e}")
+        sys.exit(1)
