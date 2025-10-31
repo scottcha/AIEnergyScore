@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
-import sys, json
+import sys, json, math
 from pathlib import Path
-
-PHASES = ("preprocess", "prefill", "decode")
+from typing import Dict, Any
 
 def to_wh(value, unit: str) -> float:
     unit = (unit or "").strip().lower()
@@ -18,8 +17,10 @@ def extract_phase_gpu_wh(rep: dict, phase: str) -> float:
     energy = node.get("energy") or {}
     gpu = energy.get("gpu")
     unit = energy.get("unit", "kWh")
-    if gpu is None: return 0.0
-    return to_wh(gpu, unit)
+    try:
+        return to_wh(gpu, unit)
+    except Exception:
+        return 0.0
 
 def detect_format(rep: dict) -> str:
     """Detect whether this is optimum-benchmark or ai_energy_benchmarks format"""
@@ -55,11 +56,9 @@ def extract_optimum_format(rep: dict) -> tuple[float, dict]:
 def find_report(start: Path) -> Path:
     if start.is_file():
         return start
-    # Prefer an obvious file name
     candidate = start / "benchmark_report.json"
     if candidate.exists():
         return candidate
-    # Otherwise pick the most recent matching file under start
     matches = list(start.rglob("benchmark_report.json"))
     if matches:
         return max(matches, key=lambda p: p.stat().st_mtime)
@@ -79,11 +78,20 @@ def main():
     else:
         print(f"Detected optimum-benchmark result format")
         total_wh, per_phase = extract_optimum_format(rep)
+        # Auto-discover phases at the top level that contain energy.gpu
+        per_phase_wh = {}
+        for phase_name, node in rep.items():
+            wh = extract_gpu_wh_from_phase(node)
+            # ignore non-positive values; keeps JSON clean per your requirement
+            if wh > 0:
+                per_phase_wh[phase_name] = wh
+
+        total_wh = round(sum(per_phase_wh.values()) + 1e-12, 2)
 
     out_dir = report_path.parent
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    # Human + CI friendly
+    # Print a readable, dynamic breakdown
     print("\n===============================")
     print(f"GPU Energy (Wh): {total_wh:,.2f}")
     if format_type == "optimum":
