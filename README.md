@@ -56,11 +56,6 @@ Results are saved in `./results/` with energy data in:
 - `GPU_ENERGY_WH.txt` - Total energy consumption
 - `GPU_ENERGY_SUMMARY.json` - Detailed metrics
 
-**Next Steps:**
-- [Compare different models](#example-comparing-energy-efficiency-across-models)
-- [Run batch tests](#batch-testing-multiple-models)
-- [Submit to the leaderboard](https://huggingface.co/spaces/AIEnergyScore/submission_portal)
-
 ---
 
 ## Quick Start: Batch Testing
@@ -81,20 +76,20 @@ python batch_runner.py \
   --num-prompts 3 \
   --output-dir ./test_run
 
-# Run all gpt-oss models
+# Run all gpt-oss Class A models (smaller models)
 python batch_runner.py \
   --model-name gpt-oss \
   --num-prompts 10 \
+  --class A
   --output-dir ./gpt_oss_results
-
-# Run all Class A models (smaller models)
-python batch_runner.py \
-  --class A \
-  --num-prompts 10 \
-  --output-dir ./class_a_results
 ```
 
 Results are aggregated in `batch_results/master_results.csv` with detailed logs in `batch_results/logs/`. See [Batch Testing Multiple Models](#batch-testing-multiple-models) for full documentation.
+
+**Next Steps:**
+- [Compare different models](#example-comparing-energy-efficiency-across-models)
+- [Run batch tests](#batch-testing-multiple-models)
+- [Submit to the leaderboard](https://huggingface.co/spaces/AIEnergyScore/submission_portal)
 
 ---
 
