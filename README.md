@@ -63,6 +63,41 @@ Results are saved in `./results/` with energy data in:
 
 ---
 
+## Quick Start: Batch Testing
+
+Test multiple models automatically from a CSV configuration:
+
+```bash
+cd AIEnergyScore
+
+# Install development dependencies (if not already done)
+source .venv/bin/activate
+pip install -r requirements-dev.txt
+
+# Test a single model first (recommended)
+python batch_runner.py \
+  --model-name "gpt-oss-20b" \
+  --reasoning-state "High" \
+  --num-prompts 3 \
+  --output-dir ./test_run
+
+# Run all gpt-oss models
+python batch_runner.py \
+  --model-name gpt-oss \
+  --num-prompts 10 \
+  --output-dir ./gpt_oss_results
+
+# Run all Class A models (smaller models)
+python batch_runner.py \
+  --class A \
+  --num-prompts 10 \
+  --output-dir ./class_a_results
+```
+
+Results are aggregated in `batch_results/master_results.csv` with detailed logs in `batch_results/logs/`. See [Batch Testing Multiple Models](#batch-testing-multiple-models) for full documentation.
+
+---
+
 ## 🔐 Gated Model Support
 AIEnergyScore supports **automatic authentication** for gated models on HuggingFace! Simply run `hf auth login` once (Step 2 above), and you'll have seamless access to models like Gemma, Llama, and other restricted models. See [Authentication for Gated Models](#authentication-for-gated-models) for details.
 
@@ -331,7 +366,7 @@ Use `pytest -m e2e` to run only the end-to-end suites; omit the marker filter to
 
 ### Batch Testing Multiple Models
 
-The `batch_runner.py` script enables testing multiple models from a CSV configuration file with minimal setup.
+The `batch_runner.py` script enables automated testing of multiple models from a CSV configuration file, with support for model-specific parameters and reasoning configurations.
 
 #### Quick Start (Docker Backend)
 
@@ -345,6 +380,13 @@ python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements-dev.txt
 
+# Test a single model first (recommended)
+python batch_runner.py \
+  --model-name "gpt-oss-20b" \
+  --reasoning-state "High" \
+  --num-prompts 3 \
+  --output-dir ./test_run
+
 # Run batch tests (uses Docker internally)
 python batch_runner.py \
   --model-name "gemma" \
@@ -352,23 +394,29 @@ python batch_runner.py \
   --num-prompts 10
 ```
 
-#### Usage Examples
+#### Common Usage Patterns
 
 ```bash
-# Test all models matching "gpt-oss"
+# Test all gpt-oss models
 python batch_runner.py --model-name "gpt-oss" --num-prompts 20
 
-# Test specific model class (A, B, or C)
-python batch_runner.py --class A --num-prompts 50
+# Test specific model class
+python batch_runner.py --class A --num-prompts 50  # Small models
+python batch_runner.py --class B --num-prompts 10  # Medium models
+python batch_runner.py --class C --num-prompts 5   # Large models
 
-# Test models with reasoning enabled
-python batch_runner.py --reasoning-state "On" --num-prompts 10
+# Filter by reasoning state
+python batch_runner.py --reasoning-state "High" --num-prompts 10
 
-# Custom CSV and output directory
+# Combine filters
 python batch_runner.py \
-  --csv my_models.csv \
-  --output-dir ./custom_results \
-  --num-prompts 100
+  --model-name gpt-oss \
+  --reasoning-state "High" \
+  --num-prompts 10
+
+# Full benchmark run with timestamped output
+python batch_runner.py \
+  --output-dir ./full_results_$(date +%Y%m%d_%H%M%S)
 ```
 
 #### Command-Line Options
@@ -379,9 +427,63 @@ python batch_runner.py \
 | `--output-dir` | Output directory for results | `./batch_results` |
 | `--backend` | Backend type: `pytorch`, `vllm` | `pytorch` |
 | `--num-prompts` | Number of prompts to run | All prompts in dataset |
+| `--prompts-file` | Custom prompts file | HuggingFace dataset |
 | `--model-name` | Filter by model name (substring) | - |
 | `--class` | Filter by model class (A/B/C) | - |
 | `--reasoning-state` | Filter by reasoning state | - |
+| `--task` | Filter by task type (text_gen, etc.) | - |
+
+#### Output Structure
+
+Results are organized with detailed logs and aggregated metrics:
+
+```
+batch_results/
+├── master_results.csv          # Aggregated results from all runs
+├── logs/                        # Debug logs for each model run
+│   └── openai_gpt-oss-20b_On_High_*.log
+└── individual_runs/             # Detailed per-model results
+    └── openai_gpt-oss-20b_On_High/
+        ├── benchmark_results.csv
+        ├── GPU_ENERGY_WH.txt
+        └── GPU_ENERGY_SUMMARY.json
+```
+
+**Key Metrics in master_results.csv:**
+- `tokens_per_joule` - Energy efficiency (higher = better)
+- `avg_energy_per_prompt_wh` - Energy cost per prompt (lower = better)
+- `throughput_tokens_per_second` - Generation speed
+- `gpu_energy_wh` - Total energy used
+- `co2_emissions_g` - Carbon emissions
+
+#### Checking Results
+
+```bash
+# View aggregated results
+cat batch_results/master_results.csv
+
+# View with formatted columns
+column -t -s',' batch_results/master_results.csv | less -S
+
+# Check success/failure counts
+tail -n +2 batch_results/master_results.csv | \
+  awk -F',' '{if ($19 == "") print "success"; else print "failed"}' | \
+  sort | uniq -c
+
+# View debug logs
+cat batch_results/logs/*.log
+```
+
+#### Model-Specific Handling
+
+The batch runner automatically configures model-specific parameters:
+
+- **gpt-oss models**: Harmony formatting with reasoning effort levels
+- **DeepSeek models**: `<think>` prefix for thinking mode
+- **Qwen models**: `enable_thinking` parameter
+- **Hunyuan models**: `/think` prefix
+- **EXAONE models**: Inverted reasoning logic
+- **Nemotron models**: `/no_think` for reasoning disable
 
 #### Using vLLM Backend
 
@@ -392,12 +494,45 @@ For the vLLM backend (direct execution), you need the full `ai_energy_benchmarks
 pip install -e ../ai_energy_benchmarks[pytorch]
 pip install -r requirements.txt
 
-# Run with vLLM backend (requires vLLM server running)
+# Start vLLM server
+vllm serve openai/gpt-oss-20b --port 8000
+
+# Run with vLLM backend
 python batch_runner.py \
   --backend vllm \
   --endpoint http://localhost:8000/v1 \
   --model-name "gpt-oss" \
   --num-prompts 10
+```
+
+#### Troubleshooting
+
+**View available models:**
+```bash
+python model_config_parser.py "AI Energy Score (Oct 2025) - Models.csv"
+```
+
+**Test what models would run:**
+```bash
+python -c "
+from model_config_parser import ModelConfigParser
+parser = ModelConfigParser('AI Energy Score (Oct 2025) - Models.csv')
+configs = parser.parse()
+filtered = parser.filter_configs(configs, model_name='gpt-oss')
+for c in filtered:
+    print(f'{c.model_id} - {c.reasoning_state}')
+"
+```
+
+**Missing dependencies:**
+```bash
+pip install pandas  # If pandas not installed
+```
+
+**Check logs for errors:**
+```bash
+# View most recent log
+ls -t batch_results/logs/*.log | head -1 | xargs cat
 ```
 
 #### vLLM Backend (ai_energy_benchmarks)

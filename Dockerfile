@@ -1,4 +1,4 @@
-FROM pytorch/pytorch:2.8.0-cuda12.9-cudnn9-runtime 
+FROM pytorch/pytorch:2.9.0-cuda13.0-cudnn9-runtime 
 
 # Update PyTorch to nightly for Blackwell support
 #RUN pip install --pre torch torchvision --index-url https://download.pytorch.org/whl/nightly/cu126
@@ -16,13 +16,15 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-ins
         rm -rf /var/lib/apt/lists/*
 
 COPY AIEnergyScore/requirements.txt requirements.txt
+# Can use this to install from TestPyPI if needed
 # Install requirements including ai_energy_benchmarks from TestPyPI
-RUN pip install --index-url https://test.pypi.org/simple/ \
-    --extra-index-url https://pypi.org/simple/ \
-    -r requirements.txt
+# RUN pip install --index-url https://test.pypi.org/simple/ \
+#     --extra-index-url https://pypi.org/simple/ \
+#     -r requirements.txt
+RUN pip install -r requirements.txt
 
 # Install optimum-benchmark (default backend)
-RUN git clone https://github.com/huggingface/optimum-benchmark.git /optimum-benchmark && cd /optimum-benchmark && git checkout reasoning_test && pip install -e .
+RUN git clone https://github.com/huggingface/optimum-benchmark.git /optimum-benchmark && cd /optimum-benchmark && pip install -e .
 
 # Alternative installation methods (for development):
 # Option B: Install from local wheel (for local development) - WITH TTFT TRACKING
@@ -34,7 +36,6 @@ COPY AIEnergyScore/entrypoint.sh /entrypoint.sh
 COPY AIEnergyScore/summarize_gpu_wh.py /summarize_gpu_wh.py
 COPY AIEnergyScore/run_ai_energy_benchmark.py /run_ai_energy_benchmark.py
 COPY AIEnergyScore/text_generation.yaml /optimum-benchmark/energy_star/text_generation.yaml
-COPY AIEnergyScore/text_generation_gptoss.yaml /optimum-benchmark/energy_star/text_generation_gptoss.yaml
 RUN chmod +x /entrypoint.sh
 RUN chmod +x /summarize_gpu_wh.py
 RUN chmod +x /run_ai_energy_benchmark.py
