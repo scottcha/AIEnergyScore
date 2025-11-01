@@ -233,6 +233,10 @@ AIEnergyScore supports multiple benchmark backends for flexibility and validatio
 | `optimum` | optimum-benchmark | optimum-benchmark generates load | Local GPU (in container) | Alternative HuggingFace backend |
 | `vllm` | ai_energy_benchmarks | ai_energy_benchmarks generates load | External vLLM server | Production load testing |
 
+**Default Backend (PyTorch):**
+
+The default `pytorch` backend uses the [ai_energy_benchmarks](https://github.com/neuralwatt/ai_energy_benchmarks) framework, which loads models directly from HuggingFace or local paths for inference. This backend provides full control over model configuration including quantization, device mapping, and multi-GPU support. It measures raw model performance without serving overhead, making it ideal for controlled experiments and head-to-head model comparisons. The PyTorch backend automatically handles model sharding across multiple GPUs for large models and supports reasoning-capable models with automatic prompt formatting.
+
 #### Default Usage (PyTorch/ai_energy_benchmarks)
 
 ```bash
