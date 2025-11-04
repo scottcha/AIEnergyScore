@@ -1,4 +1,4 @@
-![AI Energy Score](/AIEnergyScore_LightBG.png)
+![AI Energy Score](/logo.png)
 
 Welcome to AI Energy Score! This is an initiative to establish comparable energy efficiency ratings for AI models, helping the industry make informed decisions about sustainability in AI development.
 
@@ -147,8 +147,6 @@ The helper script automatically:
 # Use Optimum backend with HuggingFace optimum-benchmark
 BENCHMARK_BACKEND=optimum ./run_docker.sh --config-name text_generation backend.model=openai/gpt-oss-20b
 ```
-
-For advanced configuration, see [Docker Volume Mounting Guide](ai_helpers/DOCKER_VOLUME_MOUNTING.md).
 
 #### Authentication for Gated Models
 
@@ -572,7 +570,7 @@ Once the benchmarking has been completed, the zipped log files should be uploade
 
 *By checking the box below and submitting your energy score data, you confirm and agree to the following:*
 
-1. ***Public Data Sharing**: You consent to the public sharing of the energy performance data derived from your submission. No additional information related to this model including proprietary configurations will be disclosed.*  
-2. ***Data Integrity**: You validate that the log files submitted are accurate, unaltered, and generated directly from testing your model as per the specified benchmarking procedures.*  
+1. ***Public Data Sharing**: You consent to the public sharing of the energy performance data derived from your submission. No additional information related to this model including proprietary configurations will be disclosed.*
+2. ***Data Integrity**: You validate that the log files submitted are accurate, unaltered, and generated directly from testing your model as per the specified benchmarking procedures.*
 3. ***Model Representation**: You verify that the model tested and submitted is representative of the production-level version of the model, including its level of quantization and any other relevant characteristics impacting energy efficiency and performance.*
 
