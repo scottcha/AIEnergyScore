@@ -1,0 +1,409 @@
+#!/usr/bin/env python3
+"""
+Model Configuration Parser for AI Energy Score Batch Runner.
+
+Parses the "AI Energy Score (Oct 2025) - Models.csv" file and extracts
+model configurations including reasoning parameters and special formatting requirements.
+"""
+
+import warnings
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Any, Dict, List, Optional
+
+import pandas as pd
+
+# Optional imports - only needed for vLLM backend (not for Docker/PyTorch backend)
+# These will be imported lazily when needed
+HarmonyFormatter = None
+FormatterRegistry = None
+
+
+@dataclass
+class ModelConfig:
+    """Configuration for a single model benchmark run."""
+
+    model_id: str  # HuggingFace model ID
+    priority: int  # Priority level (1=high, 2=medium, 3=low)
+    model_class: str  # Class A/B/C
+    task: str  # Task type (text_gen, image_gen, etc.)
+    reasoning_state: str  # Reasoning state (On, Off, On (High), etc.)
+    chat_template: str  # Raw chat template/parameters from CSV
+    reasoning_params: Optional[Dict[str, Any]] = None  # Parsed reasoning parameters
+    use_harmony: bool = False  # Enable Harmony formatting (gpt-oss models)
+    prompt_prefix: str = ""  # Prefix to add to prompts
+    prompt_suffix: str = ""  # Suffix to add to prompts
+
+
+class ModelConfigParser:
+    """Parser for AI Energy Score model configuration CSV."""
+
+    def __init__(self, csv_path: str):
+        """Initialize parser with CSV file path.
+
+        Args:
+            csv_path: Path to the CSV file
+        """
+        self.csv_path = Path(csv_path)
+        if not self.csv_path.exists():
+            raise FileNotFoundError(f"CSV file not found: {csv_path}")
+
+        # Try to initialize formatter registry (optional - only needed for vLLM backend)
+        # For PyTorch backend (Docker execution), this is not needed
+        self.formatter_registry = None
+        self._harmony_formatter_class = None
+
+        try:
+            from ai_energy_benchmarks.formatters.harmony import HarmonyFormatter
+            from ai_energy_benchmarks.formatters.registry import FormatterRegistry
+
+            self.formatter_registry = FormatterRegistry()
+            self._harmony_formatter_class = HarmonyFormatter
+        except ImportError:
+            # ai_energy_benchmarks not installed - will use legacy parsing
+            # This is OK for Docker/PyTorch backend which doesn't need it
+            pass
+
+    def parse(self) -> List[ModelConfig]:
+        """Parse CSV file and return list of model configurations.
+
+        Returns:
+            List of ModelConfig objects
+        """
+        # Read CSV file
+        df = pd.read_csv(self.csv_path)
+
+        # Clean column names (remove leading/trailing spaces)
+        df.columns = df.columns.str.strip()
+
+        # Validate required columns
+        required_columns = [
+            "Models to Add",
+            "Priority (1=hi)",
+            "Class",
+            "Task",
+            "Reasoning State",
+            "Chat Template",
+        ]
+        missing_columns = set(required_columns) - set(df.columns)
+        if missing_columns:
+            raise ValueError(f"Missing required columns: {missing_columns}")
+
+        # Parse each row
+        configs = []
+        for _, row in df.iterrows():
+            # Skip rows with empty model ID
+            if pd.isna(row["Models to Add"]) or not str(row["Models to Add"]).strip():
+                continue
+
+            # Extract basic fields
+            model_id = str(row["Models to Add"]).strip()
+            # Remove https://huggingface.co/ prefix if present
+            model_id = model_id.replace("https://huggingface.co/", "")
+
+            # Parse priority (default to 1 if missing)
+            try:
+                priority = int(row["Priority (1=hi)"])
+            except (ValueError, TypeError):
+                priority = 1
+
+            model_class = str(row["Class"]).strip() if not pd.isna(row["Class"]) else ""
+            task = str(row["Task"]).strip() if not pd.isna(row["Task"]) else ""
+            reasoning_state = (
+                str(row["Reasoning State"]).strip()
+                if not pd.isna(row["Reasoning State"])
+                else ""
+            )
+            chat_template = (
+                str(row["Chat Template"]).strip()
+                if not pd.isna(row["Chat Template"])
+                else ""
+            )
+
+            # Parse model-specific parameters
+            config = ModelConfig(
+                model_id=model_id,
+                priority=priority,
+                model_class=model_class,
+                task=task,
+                reasoning_state=reasoning_state,
+                chat_template=chat_template,
+            )
+
+            # Parse chat template to extract reasoning params and flags
+            self._parse_chat_template(config)
+
+            configs.append(config)
+
+        return configs
+
+    def _is_model_in_registry(self, model_id: str) -> bool:
+        """Check if a model exists in the FormatterRegistry.
+
+        Args:
+            model_id: Model identifier to check
+
+        Returns:
+            True if model is registered (even with null formatter), False otherwise
+        """
+        if self.formatter_registry is None:
+            return False
+
+        # Use the same logic as FormatterRegistry._find_model_config
+        model_config = self.formatter_registry._find_model_config(model_id)
+        return model_config is not None
+
+    def _parse_chat_template(self, config: ModelConfig) -> None:
+        """Parse chat template and populate reasoning params and flags.
+
+        Uses FormatterRegistry for model-agnostic reasoning format detection.
+        Falls back to legacy hardcoded logic with deprecation warnings.
+
+        Args:
+            config: ModelConfig to populate (modified in-place)
+        """
+        template = config.chat_template.lower()
+
+        # Skip if N/A or empty
+        if not template or "n/a" in template:
+            return
+
+        # If formatter registry is available, use it
+        if self.formatter_registry is not None:
+            # Get formatter from registry
+            formatter = self.formatter_registry.get_formatter(config.model_id)
+
+            if formatter:
+                # Extract reasoning parameters from template
+                reasoning_params = self._extract_reasoning_params(template)
+                config.reasoning_params = reasoning_params
+
+                # Set flags based on formatter type
+                if self._harmony_formatter_class and isinstance(
+                    formatter, self._harmony_formatter_class
+                ):
+                    config.use_harmony = True
+            else:
+                # Check if model is in registry but has null formatter (intentional design)
+                if self._is_model_in_registry(config.model_id):
+                    # Model is registered with null formatter (e.g., Qwen uses chat template)
+                    # Use legacy parsing without warning - this is expected behavior
+                    self._legacy_parse_chat_template(config)
+                else:
+                    # DEPRECATED: Model truly not found in registry
+                    warnings.warn(
+                        f"Model {config.model_id} not found in FormatterRegistry. "
+                        f"Using deprecated hardcoded format detection. "
+                        f"Please add model to reasoning_formats.yaml.",
+                        DeprecationWarning,
+                        stacklevel=2,
+                    )
+                    self._legacy_parse_chat_template(config)
+        else:
+            # FormatterRegistry not available (ai_energy_benchmarks not installed)
+            # Use legacy parsing - this is fine for Docker/PyTorch backend
+            self._legacy_parse_chat_template(config)
+
+    def _extract_reasoning_params(self, template: str) -> Optional[Dict[str, Any]]:
+        """Extract reasoning parameters from template string.
+
+        Args:
+            template: Chat template string (lowercase)
+
+        Returns:
+            Dict of reasoning parameters or None
+        """
+        params = {}
+
+        # Extract reasoning_effort
+        if "reasoning_effort: high" in template or "reasoning: high" in template:
+            params["reasoning_effort"] = "high"
+        elif "reasoning_effort: medium" in template or "reasoning: medium" in template:
+            params["reasoning_effort"] = "medium"
+        elif "reasoning_effort: low" in template or "reasoning: low" in template:
+            params["reasoning_effort"] = "low"
+        elif "reasoning: true" in template:
+            # Default to high if just "reasoning: true"
+            params["reasoning_effort"] = "high"
+
+        # Extract enable_thinking
+        if "enable_thinking=true" in template:
+            params["enable_thinking"] = True
+        elif "enable_thinking=false" in template:
+            params["enable_thinking"] = False
+        # Handle system prompt flags like /think (for Hunyuan, SmolLM, etc.)
+        elif "/think" in template and "no_think" not in template:
+            # /think indicates thinking should be enabled
+            params["enable_thinking"] = True
+        elif "/no_think" in template:
+            # /no_think indicates thinking should be disabled
+            params["enable_thinking"] = False
+
+        return params if params else None
+
+    def _legacy_parse_chat_template(self, config: ModelConfig) -> None:
+        """DEPRECATED: Legacy hardcoded chat template parsing.
+
+        Args:
+            config: ModelConfig to populate (modified in-place)
+        """
+        template = config.chat_template.lower()
+        model_id_lower = config.model_id.lower()
+
+        # gpt-oss models: Enable Harmony formatting
+        if "gpt-oss" in model_id_lower:
+            config.use_harmony = True
+
+            # Extract reasoning effort
+            if "reasoning_effort: high" in template or "reasoning: high" in template:
+                config.reasoning_params = {"reasoning_effort": "high"}
+            elif "reasoning_effort: low" in template or "reasoning: low" in template:
+                config.reasoning_params = {"reasoning_effort": "low"}
+            elif (
+                "reasoning_effort: medium" in template
+                or "reasoning: medium" in template
+            ):
+                config.reasoning_params = {"reasoning_effort": "medium"}
+            elif "reasoning: true" in template:
+                # Default to high if just "reasoning: true"
+                config.reasoning_params = {"reasoning_effort": "high"}
+
+        # DeepSeek models: Prepend <think> for thinking mode
+        elif "deepseek" in model_id_lower:
+            if "<think>" in template or "prepend input with <think>" in template:
+                config.prompt_prefix = "<think>"
+            elif "enable_thinking=true" in template:
+                config.reasoning_params = {"enable_thinking": True}
+            elif "enable_thinking=false" in template:
+                config.reasoning_params = {"enable_thinking": False}
+
+        # Qwen models: enable_thinking parameter
+        elif "qwen" in model_id_lower:
+            if "enable_thinking=true" in template:
+                config.reasoning_params = {"enable_thinking": True}
+            elif "enable_thinking=false" in template:
+                config.reasoning_params = {"enable_thinking": False}
+            # Some Qwen models have thinking mode by default
+            elif (
+                "thinking mode" in template or "supports only thinking mode" in template
+            ):
+                config.prompt_prefix = "<think>"
+
+        # Hunyuan models: /think prefix
+        elif "hunyuan" in model_id_lower:
+            if "/think" in template:
+                config.prompt_prefix = "/think "
+            elif "enable_thinking=false" in template:
+                config.reasoning_params = {"enable_thinking": False}
+
+        # EXAONE models: Inverted logic (Off = thinking on)
+        elif "exaone" in model_id_lower:
+            if "enable_thinking=true" in template:
+                config.reasoning_params = {"enable_thinking": True}
+            elif "enable_thinking=false" in template:
+                config.reasoning_params = {"enable_thinking": False}
+
+        # Nemotron models: /no_think to disable
+        elif "nemotron" in model_id_lower:
+            if "/no_think" in template:
+                config.prompt_prefix = "/no_think "
+            # Default is thinking ON, so no action needed for "On"
+
+        # Phi models: Generic reasoning parameter
+        elif "phi" in model_id_lower:
+            if "reasoning: true" in template:
+                config.reasoning_params = {"reasoning": True}
+            elif "reasoning: false" in template:
+                config.reasoning_params = {"reasoning": False}
+
+        # SmolLM models: Generic reasoning parameter
+        elif "smollm" in model_id_lower:
+            if "reasoning: true" in template:
+                config.reasoning_params = {"reasoning": True}
+            elif "reasoning: false" in template:
+                config.reasoning_params = {"reasoning": False}
+
+        # Gemma models: Generic reasoning parameter
+        elif "gemma" in model_id_lower:
+            if "reasoning: true" in template:
+                config.reasoning_params = {"reasoning": True}
+
+        # Generic fallback: Look for common patterns
+        else:
+            # Check for generic reasoning parameter
+            if "reasoning: true" in template:
+                config.reasoning_params = {"reasoning": True}
+            elif "reasoning: false" in template:
+                config.reasoning_params = {"reasoning": False}
+
+    def filter_configs(
+        self,
+        configs: List[ModelConfig],
+        model_name: Optional[str] = None,
+        model_class: Optional[str] = None,
+        task: Optional[str] = None,
+        reasoning_state: Optional[str] = None,
+    ) -> List[ModelConfig]:
+        """Filter model configurations based on criteria.
+
+        Args:
+            configs: List of ModelConfig objects to filter
+            model_name: Filter by model name (substring match)
+            model_class: Filter by model class (A, B, or C)
+            task: Filter by task type
+            reasoning_state: Filter by reasoning state
+
+        Returns:
+            Filtered list of ModelConfig objects
+        """
+        filtered = configs
+
+        if model_name:
+            filtered = [c for c in filtered if model_name.lower() in c.model_id.lower()]
+
+        if model_class:
+            filtered = [
+                c for c in filtered if c.model_class.upper() == model_class.upper()
+            ]
+
+        if task:
+            filtered = [c for c in filtered if task.lower() in c.task.lower()]
+
+        if reasoning_state:
+            filtered = [
+                c
+                for c in filtered
+                if reasoning_state.lower() in c.reasoning_state.lower()
+            ]
+
+        return filtered
+
+
+def main():
+    """Test the parser with sample CSV."""
+    import sys
+
+    csv_path = (
+        sys.argv[1] if len(sys.argv) > 1 else "AI Energy Score (Oct 2025) - Models.csv"
+    )
+
+    parser = ModelConfigParser(csv_path)
+    configs = parser.parse()
+
+    print(f"Parsed {len(configs)} model configurations\n")
+    print("=" * 80)
+
+    for i, config in enumerate(configs[:5], 1):  # Show first 5
+        print(f"\nModel {i}: {config.model_id}")
+        print(f"  Class: {config.model_class}, Task: {config.task}")
+        print(f"  Reasoning State: {config.reasoning_state}")
+        print(f"  Use Harmony: {config.use_harmony}")
+        print(f"  Reasoning Params: {config.reasoning_params}")
+        print(f"  Prompt Prefix: '{config.prompt_prefix}'")
+
+    print("\n" + "=" * 80)
+    print(f"\n... and {len(configs) - 5} more models")
+
+
+if __name__ == "__main__":
+    main()

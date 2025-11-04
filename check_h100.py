@@ -12,4 +12,5 @@ if __name__=="__main__":
     if "NVIDIA H100" in gpu_name:
         print("At least one NVIDIA H100 GPU has been detected, launching the benchmark...")
     else:
-        raise RuntimeError(f"This Docker container should be executed on NVIDIA H100 GPUs only, detected {gpu_name}.")
+        print(f"WARNING: Running on {gpu_name} for validation testing (not H100)...")
+        print("Note: Results may not be comparable to official AIEnergyScore benchmarks.")
