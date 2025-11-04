@@ -1,7 +1,7 @@
 accelerate==1.10.0
 codecarbon==3.0.4
 datasets==4.0.0
-diffusers==0.32.0
+diffusers==0.35.2
 huggingface-hub>=0.34.4
 transformers>=4.57.1
 librosa==0.10.1

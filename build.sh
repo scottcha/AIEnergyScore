@@ -6,15 +6,9 @@
 
 set -e
 
-echo "Building AIEnergyScore Docker image with ai_energy_benchmarks from TestPyPI..."
-echo "Build context: ~/src/"
-echo ""
-
-cd ~/src/
-
 # Build Docker image
 docker build \
-    -f AIEnergyScore/Dockerfile \
+    -f Dockerfile \
     -t ai_energy_score \
     .
 
