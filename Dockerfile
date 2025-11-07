@@ -30,13 +30,9 @@ RUN git clone https://github.com/huggingface/optimum-benchmark.git /optimum-benc
 # COPY ai_energy_benchmarks/dist/ai_energy_benchmarks-*.whl /tmp/
 # RUN pip install /tmp/ai_energy_benchmarks-*.whl && rm -rf /tmp/*.whl
 
-COPY check_h100.py /check_h100.py
 COPY entrypoint.sh /entrypoint.sh
-COPY summarize_gpu_wh.py /summarize_gpu_wh.py
-COPY run_ai_energy_benchmark.py /run_ai_energy_benchmark.py
-COPY batch_runner.py /batch_runner.py
-COPY debug_logger.py /debug_logger.py
 COPY *.py /
+COPY 'AI Energy Score (Oct 2025) - Models.csv' /'AI Energy Score (Oct 2025) - Models.csv'
 COPY text_generation.yaml /optimum-benchmark/energy_star/text_generation.yaml
 RUN chmod +x /entrypoint.sh
 RUN chmod +x /summarize_gpu_wh.py
