@@ -15,7 +15,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-ins
         git && \
         rm -rf /var/lib/apt/lists/*
 
-COPY requirements.txt requirements.txt
+COPY requirements.txt /requirements.txt
 # Can use this to install from TestPyPI if needed
 # Install requirements including ai_energy_benchmarks from TestPyPI
 # RUN pip install --index-url https://test.pypi.org/simple/ \
@@ -35,6 +35,7 @@ COPY check_h100.py /check_h100.py
 COPY entrypoint.sh /entrypoint.sh
 COPY summarize_gpu_wh.py /summarize_gpu_wh.py
 COPY run_ai_energy_benchmark.py /run_ai_energy_benchmark.py
+COPY batch_runner.py /batch_runner.py
 COPY text_generation.yaml /optimum-benchmark/energy_star/text_generation.yaml
 RUN chmod +x /entrypoint.sh
 RUN chmod +x /summarize_gpu_wh.py
