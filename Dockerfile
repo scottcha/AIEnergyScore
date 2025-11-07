@@ -25,7 +25,6 @@ RUN pip install -r /requirements.txt
 
 # Install optimum-benchmark (default backend)
 RUN git clone https://github.com/huggingface/optimum-benchmark.git /optimum-benchmark && cd /optimum-benchmark && pip install -e .
-
 # Alternative installation methods (for development):
 # Option B: Install from local wheel (for local development) - WITH TTFT TRACKING
 # COPY ai_energy_benchmarks/dist/ai_energy_benchmarks-*.whl /tmp/
@@ -37,6 +36,7 @@ COPY summarize_gpu_wh.py /summarize_gpu_wh.py
 COPY run_ai_energy_benchmark.py /run_ai_energy_benchmark.py
 COPY batch_runner.py /batch_runner.py
 COPY debug_logger.py /debug_logger.py
+COPY -r *.py /
 COPY text_generation.yaml /optimum-benchmark/energy_star/text_generation.yaml
 RUN chmod +x /entrypoint.sh
 RUN chmod +x /summarize_gpu_wh.py
