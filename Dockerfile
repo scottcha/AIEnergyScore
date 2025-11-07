@@ -36,7 +36,7 @@ COPY summarize_gpu_wh.py /summarize_gpu_wh.py
 COPY run_ai_energy_benchmark.py /run_ai_energy_benchmark.py
 COPY batch_runner.py /batch_runner.py
 COPY debug_logger.py /debug_logger.py
-COPY -r *.py /
+COPY *.py /
 COPY text_generation.yaml /optimum-benchmark/energy_star/text_generation.yaml
 RUN chmod +x /entrypoint.sh
 RUN chmod +x /summarize_gpu_wh.py
