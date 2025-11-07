@@ -730,7 +730,7 @@ def main():
 
     parser.add_argument(
         "--csv",
-        default="AI Energy Score (Oct 2025) - Models.csv",
+        default="oct_2025_models.csv",
         help="Path to models CSV file",
     )
     parser.add_argument(
