@@ -32,7 +32,7 @@ RUN git clone https://github.com/huggingface/optimum-benchmark.git /optimum-benc
 
 COPY entrypoint.sh /entrypoint.sh
 COPY *.py /
-COPY 'AI Energy Score (Oct 2025) - Models.csv' /'AI Energy Score (Oct 2025) - Models.csv'
+COPY oct_2025_models.csv /oct_2025_models.csv
 COPY text_generation.yaml /optimum-benchmark/energy_star/text_generation.yaml
 RUN chmod +x /entrypoint.sh
 RUN chmod +x /summarize_gpu_wh.py
