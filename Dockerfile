@@ -15,13 +15,13 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-ins
         git && \
         rm -rf /var/lib/apt/lists/*
 
-COPY requirements.txt requirements.txt
+COPY requirements.txt /requirements.txt
 # Can use this to install from TestPyPI if needed
 # Install requirements including ai_energy_benchmarks from TestPyPI
 # RUN pip install --index-url https://test.pypi.org/simple/ \
 #     --extra-index-url https://pypi.org/simple/ \
 #     -r requirements.txt
-RUN pip install -r requirements.txt
+RUN pip install -r /requirements.txt
 
 # Install optimum-benchmark (default backend)
 RUN git clone https://github.com/huggingface/optimum-benchmark.git /optimum-benchmark && cd /optimum-benchmark && pip install -e .
