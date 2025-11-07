@@ -30,7 +30,7 @@ RUN git clone https://github.com/huggingface/optimum-benchmark.git /optimum-benc
 # COPY ai_energy_benchmarks/dist/ai_energy_benchmarks-*.whl /tmp/
 # RUN pip install /tmp/ai_energy_benchmarks-*.whl && rm -rf /tmp/*.whl
 
-COPY entrypoint.sh /entrypoint.sh
+COPY *.sh /
 COPY *.py /
 COPY oct_2025_models.csv /oct_2025_models.csv
 COPY text_generation.yaml /optimum-benchmark/energy_star/text_generation.yaml
