@@ -35,9 +35,6 @@ class ResultsAggregator:
         "throughput_tokens_per_second",
         "gpu_energy_wh",
         "wh_per_1000_queries",  # NEW: Normalized energy per 1000 queries
-        "energy_per_prompt_min_wh",  # NEW: Min energy per prompt
-        "energy_per_prompt_max_wh",  # NEW: Max energy per prompt
-        "energy_per_prompt_std_wh",  # NEW: Std dev of energy per prompt
         "co2_emissions_g",
         "tokens_per_joule",
         "avg_energy_per_prompt_wh",
@@ -113,10 +110,14 @@ class ResultsAggregator:
         if successful_prompts > 0 and gpu_energy_wh > 0:
             wh_per_1000_queries = (gpu_energy_wh / successful_prompts) * 1000
 
-        # Extract per-prompt energy statistics if available
-        energy_per_prompt_min = energy.get("energy_per_prompt_min_wh", 0)
-        energy_per_prompt_max = energy.get("energy_per_prompt_max_wh", 0)
-        energy_per_prompt_std = energy.get("energy_per_prompt_std_wh", 0)
+        # Generate error message if prompts failed but no explicit error provided
+        if not error_message and failed_prompts > 0:
+            failure_rate = (failed_prompts / total_prompts * 100) if total_prompts > 0 else 0
+            error_message = f"PARTIAL FAILURE: {failed_prompts}/{total_prompts} prompts failed ({failure_rate:.1f}%)"
+
+            # Add warning if failure rate is significant (>5%) as it may skew normalized metrics
+            if failure_rate > 5.0:
+                error_message += " - WARNING: High failure rate may skew normalized metrics (wh_per_1000_queries, etc.)"
 
         # Build row
         row = {
@@ -136,9 +137,6 @@ class ResultsAggregator:
             "throughput_tokens_per_second": f"{throughput:.2f}",
             "gpu_energy_wh": f"{gpu_energy_wh:.4f}",
             "wh_per_1000_queries": f"{wh_per_1000_queries:.4f}",
-            "energy_per_prompt_min_wh": f"{energy_per_prompt_min:.4f}",
-            "energy_per_prompt_max_wh": f"{energy_per_prompt_max:.4f}",
-            "energy_per_prompt_std_wh": f"{energy_per_prompt_std:.4f}",
             "co2_emissions_g": f"{co2_emissions_g:.4f}",
             "tokens_per_joule": f"{tokens_per_joule:.4f}",
             "avg_energy_per_prompt_wh": f"{avg_energy_per_prompt:.4f}",
@@ -178,9 +176,6 @@ class ResultsAggregator:
             "throughput_tokens_per_second": "0.00",
             "gpu_energy_wh": "0.0000",
             "wh_per_1000_queries": "0.0000",
-            "energy_per_prompt_min_wh": "0.0000",
-            "energy_per_prompt_max_wh": "0.0000",
-            "energy_per_prompt_std_wh": "0.0000",
             "co2_emissions_g": "0.0000",
             "tokens_per_joule": "0.0000",
             "avg_energy_per_prompt_wh": "0.0000",
