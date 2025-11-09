@@ -25,6 +25,13 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 from batch_runner import BatchRunner
 from model_config_parser import ModelConfig, ModelConfigParser
 
+# Check if ai_energy_benchmarks is available
+try:
+    import ai_energy_benchmarks
+    HAS_AI_ENERGY_BENCHMARKS = True
+except ImportError:
+    HAS_AI_ENERGY_BENCHMARKS = False
+
 
 class TestReasoningParameterParsing:
     """Test that reasoning parameters are correctly parsed from CSV."""
@@ -32,7 +39,7 @@ class TestReasoningParameterParsing:
     @pytest.fixture
     def csv_path(self):
         """Get path to models CSV."""
-        return Path(__file__).parent.parent / "AI Energy Score (Oct 2025) - Models.csv"
+        return Path(__file__).parent.parent / "oct_2025_models.csv"
 
     @pytest.fixture
     def parser(self, csv_path):
@@ -102,7 +109,7 @@ class TestTokenConstraints:
     def mock_runner(self, temp_output_dir):
         """Create BatchRunner with mocked execution."""
         return BatchRunner(
-            csv_path="AI Energy Score (Oct 2025) - Models.csv",
+            csv_path="oct_2025_models.csv",
             output_dir=str(temp_output_dir),
             backend_type="pytorch",
             num_prompts=1,
@@ -214,11 +221,12 @@ class TestDockerCommandConstruction:
             # these would be verified in the command list
             assert "reasoning" in override or "generate_kwargs" in override
 
+    @pytest.mark.skipif(not HAS_AI_ENERGY_BENCHMARKS, reason="Requires ai_energy_benchmarks package")
     def test_vllm_backend_config_token_limits(self):
         """Test that vLLM backend also respects reasoning token limits."""
         with tempfile.TemporaryDirectory() as tmpdir:
             runner = BatchRunner(
-                csv_path="AI Energy Score (Oct 2025) - Models.csv",
+                csv_path="oct_2025_models.csv",
                 output_dir=tmpdir,
                 backend_type="vllm",
                 endpoint="http://localhost:8000/v1",
@@ -365,7 +373,7 @@ class TestEnergyDifferentiation:
 
 def test_reasoning_params_end_to_end():
     """Quick end-to-end test without actual execution."""
-    csv_path = Path(__file__).parent.parent / "AI Energy Score (Oct 2025) - Models.csv"
+    csv_path = Path(__file__).parent.parent / "oct_2025_models.csv"
 
     # Parse configs
     parser = ModelConfigParser(str(csv_path))
