@@ -52,22 +52,22 @@
 ,https://huggingface.co/tencent/Hunyuan-1.8B-Instruct,2,A,text_gen,On,Slow-Thinking Mode (Default): /think before the prompt.
 ,https://huggingface.co/tencent/Hunyuan-1.8B-Instruct,2,A,text_gen,Off,enable_thinking=False
 ,https://huggingface.co/Qwen/Qwen3-30B-A3B,2,B,text_gen,Off,enable_thinking=False
-,https://huggingface.co/LGAI-EXAONE/EXAONE-4.0-32B,2,B,text_gen,On,N/A (default)
-,https://huggingface.co/LGAI-EXAONE/EXAONE-4.0-32B,2,B,text_gen,Off,enable_thinking=True
+,https://huggingface.co/LGAI-EXAONE/EXAONE-4.0-32B,2,B,text_gen,On,enable_thinking=True
+,https://huggingface.co/LGAI-EXAONE/EXAONE-4.0-32B,2,B,text_gen,Off,N/A (default)
 ,https://huggingface.co/mistralai/Magistral-Small-2507,2,B,text_gen,Off (N/A),N/A (default)
 ,https://huggingface.co/deepseek-ai/DeepSeek-V3,2,C,text_gen,Off (N/A),N/A (default)
 ,https://huggingface.co/zai-org/GLM-4.15-Air,2,C,text_gen,Off (N/A),N/A
 ,https://huggingface.co/Qwen/Qwen3-0.6B,3,A,text_gen,On,enable_thinking=True
 ,https://huggingface.co/Qwen/Qwen3-0.6B,3,A,text_gen,Off,enable_thinking=False
 ,https://huggingface.co/nvidia/Llama-3_3-Nemotron-Super-49B-v1_5,3,B,text_gen,Off,Reasoning OFF Mode: /no_think in the system prompt.
-,https://huggingface.co/nvidia/Llama-3_3-Nemotron-Super-49B-v1_5,3,B,text_gen,On,N/A (default)
+,https://huggingface.co/nvidia/Llama-3_3-Nemotron-Super-49B-v1_5,3,B,text_gen,On,reasoning: True
 ,https://huggingface.co/google/gemma-3-27b-pt,3,B,text_gen,Off (N/A),N/A (default)
 ,https://huggingface.co/deepseek-ai/DeepSeek-R1-0528,3,C,text_gen,Off,N/A (default)
 ,https://huggingface.co/deepseek-ai/DeepSeek-R1-0528,3,C,text_gen,On,enable_thinking=True
 ,https://huggingface.co/Qwen/Qwen-Image,3,,image_gen,,N/A (default)
 ,https://huggingface.co/black-forest-labs/FLUX.1-dev,3,,image_gen,,N/A (default)
 ,https://huggingface.co/HiDream-ai/HiDream-I1-Full,3,,image_gen,,N/A (default)
-,https://huggingface.co/deepseek-ai/DeepSeek-R1-Distill-Llama-70B,3,C,text_gen,On,enable_thinking=False
+,https://huggingface.co/deepseek-ai/DeepSeek-R1-Distill-Llama-70B,3,C,text_gen,Off,enable_thinking=False
 ,https://huggingface.co/deepseek-ai/DeepSeek-R1-Distill-Llama-70B,3,C,text_gen,On,enable_thinking=True
-,https://huggingface.co/deepseek-ai/DeepSeek-R1-Distill-Qwen-32B,3,C,text_gen,On,enable_thinking=False
+,https://huggingface.co/deepseek-ai/DeepSeek-R1-Distill-Qwen-32B,3,C,text_gen,Off,enable_thinking=False
 ,https://huggingface.co/deepseek-ai/DeepSeek-R1-Distill-Qwen-32B,3,C,text_gen,On,enable_thinking=True
