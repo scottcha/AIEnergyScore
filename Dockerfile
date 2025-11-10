@@ -15,6 +15,9 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-ins
         git && \
         rm -rf /var/lib/apt/lists/*
 
+# Copy version information
+COPY VERSION /VERSION
+
 COPY requirements.txt /requirements.txt
 # Can use this to install from TestPyPI if needed
 # Install requirements including ai_energy_benchmarks from TestPyPI

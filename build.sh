@@ -6,6 +6,12 @@
 
 set -e
 
+# Display current version
+if [ -f VERSION ]; then
+    echo "Building version: $(cat VERSION)"
+    echo ""
+fi
+
 # Build Docker image
 docker build \
     -f Dockerfile \
