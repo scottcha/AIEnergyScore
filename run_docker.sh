@@ -104,11 +104,15 @@ if [ -f "${HF_TOKEN_FILE}" ]; then
     VOLUME_MOUNTS="${VOLUME_MOUNTS} -v ${HF_TOKEN_FILE}:/home/user/.huggingface/token:ro"
 fi
 
+# Get image build date
+IMAGE_CREATED=$(docker inspect --format='{{.Created}}' "${IMAGE_NAME}" 2>/dev/null | cut -d'T' -f1 || echo "unknown")
+
 # Display configuration
 echo "============================================"
 echo "AIEnergyScore Docker Runner"
 echo "============================================"
 echo "Image:         ${IMAGE_NAME}"
+echo "Image Built:   ${IMAGE_CREATED}"
 echo "Backend:       ${BACKEND}"
 echo "Num Samples:   ${NUM_SAMPLES}"
 echo "Results dir:   ${RESULTS_DIR}"
