@@ -20,7 +20,7 @@ def test_model_config_parser():
 
     from model_config_parser import ModelConfigParser
 
-    csv_path = Path(__file__).parent.parent / "AI Energy Score (Oct 2025) - Models.csv"
+    csv_path = Path(__file__).parent.parent / "oct_2025_models.csv"
 
     assert csv_path.exists(), f"CSV file not found: {csv_path}"
 

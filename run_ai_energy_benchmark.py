@@ -63,6 +63,42 @@ def get_available_gpu_count():
         return 0
 
 
+def check_dataset_size(dataset_name, num_samples_requested):
+    """Check if dataset has enough samples and warn if not.
+
+    Args:
+        dataset_name: Name of the dataset
+        num_samples_requested: Number of samples requested
+
+    Returns:
+        Actual number of samples that will be used
+    """
+    try:
+        from datasets import load_dataset
+
+        logger.info(f"Checking dataset size for: {dataset_name}")
+
+        # Load dataset to check size
+        dataset = load_dataset(dataset_name, split='train')
+        dataset_size = len(dataset)
+
+        logger.info(f"Dataset '{dataset_name}' contains {dataset_size} samples")
+
+        if num_samples_requested > dataset_size:
+            logger.warning("=" * 80)
+            logger.warning(f"WARNING: Requested {num_samples_requested} prompts, but dataset only has {dataset_size} samples!")
+            logger.warning(f"Only {dataset_size} prompts will be processed.")
+            logger.warning("=" * 80)
+            return dataset_size
+
+        return num_samples_requested
+
+    except Exception as e:
+        logger.warning(f"Could not check dataset size: {e}")
+        logger.warning("Proceeding with requested number of samples...")
+        return num_samples_requested
+
+
 def convert_to_ai_energy_benchmarks_config(optimum_config, overrides):
     """Convert optimum-benchmark config to ai_energy_benchmarks format"""
 
@@ -144,6 +180,14 @@ def run_pytorch_backend(config, output_dir):
         logger.info(f"Model: {config['backend']['model']}")
         logger.info(f"Dataset: {config['dataset']['name']}")
         logger.info(f"Samples: {config['dataset']['num_samples']}")
+
+        # Check dataset size and warn if requested samples exceed dataset size
+        actual_num_samples = check_dataset_size(
+            config['dataset']['name'],
+            config['dataset']['num_samples']
+        )
+        # Update config with actual number of samples that will be used
+        config['dataset']['num_samples'] = actual_num_samples
 
         # Create output directory
         output_path = Path(output_dir)
@@ -239,6 +283,16 @@ def run_vllm_backend(config, output_dir, endpoint):
         logger.info("Initializing ai_energy_benchmarks vLLM backend")
         logger.info(f"Endpoint: {endpoint}")
         logger.info(f"Model: {config['backend']['model']}")
+        logger.info(f"Dataset: {config['dataset']['name']}")
+        logger.info(f"Samples: {config['dataset']['num_samples']}")
+
+        # Check dataset size and warn if requested samples exceed dataset size
+        actual_num_samples = check_dataset_size(
+            config['dataset']['name'],
+            config['dataset']['num_samples']
+        )
+        # Update config with actual number of samples that will be used
+        config['dataset']['num_samples'] = actual_num_samples
 
         # Create output directory
         output_path = Path(output_dir)

@@ -99,7 +99,7 @@ class BatchRunner:
         if prompts_file:
             self.prompts_file = prompts_file
         else:
-            # Default to None - will use HuggingFace dataset scottcha/reasoning_text_generation
+            # Default to None - will use HuggingFace dataset EnergyStarAI/text_generation
             self.prompts_file = None
 
     def _is_reasoning_enabled(self, reasoning_params: Optional[Dict]) -> bool:
@@ -165,7 +165,7 @@ class BatchRunner:
                 cmd.append(f"scenario.dataset_name={self.prompts_file}")
             else:
                 # Use default dataset
-                cmd.append("scenario.dataset_name=scottcha/reasoning_text_generation")
+                cmd.append("scenario.dataset_name=EnergyStarAI/text_generation")
 
             # Add reasoning parameters if actually enabled
             if self._is_reasoning_enabled(config.reasoning_params):
@@ -207,7 +207,6 @@ class BatchRunner:
                 cwd=script_dir,
                 capture_output=True,
                 text=True,
-                timeout=3600  # 1 hour timeout
             )
 
             # Log output
@@ -571,8 +570,8 @@ class BatchRunner:
             dataset_name = self.prompts_file
             logger.info(f"Using prompts file: {self.prompts_file}")
         else:
-            # Use the dataset from YAML configs - scottcha/reasoning_text_generation
-            dataset_name = "scottcha/reasoning_text_generation"
+            # Use the dataset from YAML configs - EnergyStarAI/text_generation
+            dataset_name = "EnergyStarAI/text_generation"
             logger.info(f"Using HuggingFace dataset: {dataset_name}")
 
         # Scenario configuration
@@ -751,7 +750,7 @@ def main():
     )
     parser.add_argument(
         "--prompts-file",
-        help="Path to prompts CSV file (optional, defaults to HuggingFace dataset scottcha/reasoning_text_generation)",
+        help="Path to prompts CSV file (optional, defaults to HuggingFace dataset EnergyStarAI/text_generation)",
     )
     parser.add_argument(
         "--num-prompts",

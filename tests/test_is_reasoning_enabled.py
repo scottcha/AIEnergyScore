@@ -18,6 +18,13 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 from batch_runner import BatchRunner
 from model_config_parser import ModelConfig
 
+# Check if ai_energy_benchmarks is available
+try:
+    import ai_energy_benchmarks
+    HAS_AI_ENERGY_BENCHMARKS = True
+except ImportError:
+    HAS_AI_ENERGY_BENCHMARKS = False
+
 
 class TestIsReasoningEnabled:
     """Test the _is_reasoning_enabled() helper function."""
@@ -27,7 +34,7 @@ class TestIsReasoningEnabled:
         """Create BatchRunner instance."""
         with tempfile.TemporaryDirectory() as tmpdir:
             return BatchRunner(
-                csv_path="AI Energy Score (Oct 2025) - Models.csv",
+                csv_path="oct_2025_models.csv",
                 output_dir=tmpdir,
                 backend_type="pytorch",
                 num_prompts=1,
@@ -90,12 +97,13 @@ class TestQwenModelHandling:
         """Create BatchRunner instance."""
         with tempfile.TemporaryDirectory() as tmpdir:
             return BatchRunner(
-                csv_path="AI Energy Score (Oct 2025) - Models.csv",
+                csv_path="oct_2025_models.csv",
                 output_dir=tmpdir,
                 backend_type="pytorch",
                 num_prompts=2,
             )
 
+    @pytest.mark.skipif(not HAS_AI_ENERGY_BENCHMARKS, reason="Requires ai_energy_benchmarks package")
     def test_qwen_off_mode_uses_small_tokens(self, runner):
         """Test that Qwen Off mode (enable_thinking=False) uses 10 token limit."""
         config = ModelConfig(
@@ -131,6 +139,7 @@ class TestQwenModelHandling:
         assert benchmark_config.scenario.reasoning is False, \
             "Qwen Off mode should have reasoning=False"
 
+    @pytest.mark.skipif(not HAS_AI_ENERGY_BENCHMARKS, reason="Requires ai_energy_benchmarks package")
     def test_qwen_on_mode_uses_large_tokens(self, runner):
         """Test that Qwen On mode (enable_thinking=True) uses 8192 token limit."""
         config = ModelConfig(
@@ -174,7 +183,7 @@ class TestDockerCommandQwen:
         """Create BatchRunner instance."""
         with tempfile.TemporaryDirectory() as tmpdir:
             return BatchRunner(
-                csv_path="AI Energy Score (Oct 2025) - Models.csv",
+                csv_path="oct_2025_models.csv",
                 output_dir=tmpdir,
                 backend_type="pytorch",
                 num_prompts=2,
