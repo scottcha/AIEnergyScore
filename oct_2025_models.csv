@@ -36,7 +36,7 @@
 ,https://huggingface.co/zai-org/GLM-4.6,1,C,text_gen,Off (N/A),N/A (default)
 ,https://huggingface.co/ibm-granite/granite-4.0-micro,1,A,text_gen,Off (N/A),N/A (default)
 ,https://huggingface.co/ibm-granite/granite-4.0-h-tiny,1,A,text_gen,Off (N/A),N/A (default)
-,https://huggingface.co/ibm-granite/granite-4.0-h-small,1,B,text_gen,Off (N/A),N/A (default)
+,https://huggingface.co/ibm-granite/granite-4.0-h-small,1,C,text_gen,Off (N/A),N/A (default)
 ,https://huggingface.co/moonshotai/Kimi-K2-Instruct,1,C,text_gen,Off (N/A),N/A (default)
 ,https://huggingface.co/swiss-ai/Apertus-8B-Instruct-2509 ,1,A,text_gen,Off (N/A),N/A (default)
 ,https://huggingface.co/swiss-ai/Apertus-70B-Instruct-2509,1,C,text_gen,Off (N/A),N/A (default)
