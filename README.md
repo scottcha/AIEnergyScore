@@ -181,6 +181,92 @@ HF_TOKEN=hf_xxx ./run_docker.sh --config-name text_generation backend.model=goog
 ```
 The `run_docker.sh` script will display a warning if no authentication is found when you run it.
 
+#### Non-Docker Usage
+
+For environments without Docker support or when you prefer direct execution, use the `run_non_docker.sh` script:
+
+**Setup (first time only):**
+```bash
+# 1. Create and activate virtual environment
+python3 -m venv .venv
+source .venv/bin/activate
+
+# 2. Install requirements
+pip install -r requirements.txt
+pip install -r requirements-dev.txt
+
+# 3. Authenticate with HuggingFace (for gated models)
+huggingface-cli login
+# or
+hf auth login
+
+# 4. Verify GPU access
+python -c "import torch; print(f'CUDA available: {torch.cuda.is_available()}, GPUs: {torch.cuda.device_count()}')"
+```
+
+**Direct Mode - Run a single benchmark:**
+```bash
+# Always activate virtual environment first
+source .venv/bin/activate
+
+# Basic usage with default settings (20 prompts, pytorch backend)
+./run_non_docker.sh backend.model=openai/gpt-oss-20b
+
+# Customize number of prompts
+./run_non_docker.sh -n 100 backend.model=openai/gpt-oss-120b
+
+# Override other Hydra config parameters
+./run_non_docker.sh backend.model=openai/gpt-oss-20b scenario.dataset_name=custom.csv
+
+# Using vLLM backend (requires running vLLM server)
+./run_non_docker.sh -b vllm -e http://localhost:8021/v1 backend.model=openai/gpt-oss-20b
+```
+
+**Batch Mode - Test multiple models from CSV:**
+```bash
+# Activate virtual environment
+source .venv/bin/activate
+
+# Run all Class A models
+./run_non_docker.sh --batch --class A --output-dir ./class_a_results
+
+# Filter by model name pattern
+./run_non_docker.sh --batch --model-name "Llama" --num-prompts 50
+
+# Filter by reasoning state
+./run_non_docker.sh --batch --reasoning-state "On (High)" --output-dir ./reasoning_tests
+
+# Combine filters
+./run_non_docker.sh --batch --class A --model-name gpt --reasoning-state "Off (N/A)" -n 10
+```
+
+**Key Options:**
+
+Direct Mode:
+- `-n, --num-samples NUM` - Number of prompts to test (default: 20) (alias: `--num-prompts`)
+- `-b, --backend BACKEND` - Backend: pytorch, vllm, optimum (default: pytorch)
+- `-e, --endpoint URL` - vLLM endpoint URL (default: http://localhost:8000/v1)
+- Additional Hydra config overrides can be passed as key=value arguments (e.g., `backend.model=...`, `scenario.dataset_name=...`)
+
+Batch Mode (use with `--batch`):
+- `--csv FILE` - Path to models CSV file (default: oct_2025_models.csv)
+- `--output-dir DIR` - Output directory for results (default: ./batch_results)
+- `--model-name PATTERN` - Filter by model name (substring match)
+- `--class CLASS` - Filter by model class (A, B, or C)
+- `--task TASK` - Filter by task type (e.g., text_gen, image_gen)
+- `--reasoning-state STATE` - Filter by reasoning state (e.g., 'On', 'Off', 'On (High)')
+- `--num-prompts NUM` - Number of prompts per model (alias: `-n`, `--num-samples`)
+- `--prompts-file FILE` - Path to custom prompts CSV file (optional)
+
+**Environment Variables:**
+- `HF_TOKEN` - HuggingFace API token for gated models
+- `HF_HOME` - HuggingFace cache location (default: ~/.cache/huggingface)
+- `VENV_DIR` - Virtual environment directory (default: .venv)
+- `RESULTS_DIR` - Results directory for Direct Mode (default: ./results)
+- `PYTHON_BIN` - Python binary to use (default: auto-detected from .venv)
+
+Results are saved in the specified output directory with the same structure as Docker mode.
+
 #### Manual Usage
 
 Alternatively, you can run your benchmark manually. **Important**: Create the results directory first to avoid permission errors:

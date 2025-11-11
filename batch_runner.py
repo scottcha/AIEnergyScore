@@ -246,6 +246,139 @@ class BatchRunner:
             self._cleanup_docker_containers(logger)
             return None
 
+    def _run_non_docker(
+        self,
+        config: ModelConfig,
+        run_dir: Path,
+        logger: DebugLogger
+    ) -> Optional[Dict]:
+        """Run benchmark directly without Docker using ai_energy_benchmarks.
+
+        Args:
+            config: ModelConfig to run
+            run_dir: Output directory for this run
+            logger: Logger instance
+
+        Returns:
+            Results dictionary if successful, None otherwise
+        """
+        try:
+            # Check if BenchmarkRunner is available
+            if BenchmarkRunner is None:
+                logger.error("BenchmarkRunner not available - install ai_energy_benchmarks")
+                return None
+
+            logger.info("Running benchmark directly (non-Docker) using ai_energy_benchmarks...")
+
+            # Build benchmark configuration (same as vLLM backend)
+            benchmark_config = self._build_benchmark_config(config, run_dir, logger)
+
+            # Create and run benchmark
+            logger.info("Initializing benchmark runner...")
+            runner = BenchmarkRunner(benchmark_config)
+
+            # Validate
+            logger.info("Validating environment...")
+            try:
+                if not runner.validate():
+                    error_msg = "Benchmark validation failed"
+                    logger.error(error_msg)
+
+                    # Try to get more details about the failure
+                    logger.debug("Attempting to initialize backend directly for detailed error...")
+                    try:
+                        if hasattr(runner.backend, '_initialize_model'):
+                            runner.backend._initialize_model()
+                    except Exception as init_error:
+                        detailed_error = f"Benchmark validation failed: {str(init_error)}"
+                        logger.error(f"Detailed error: {detailed_error}")
+                        return None
+
+                    return None
+            except Exception as val_error:
+                error_msg = f"Validation error: {str(val_error)}"
+                logger.error(error_msg)
+                logger.log_error_details(val_error)
+                return None
+
+            # Run benchmark
+            logger.info(f"Running benchmark with {self.num_prompts} prompts...")
+            results = runner.run()
+
+            return results
+
+        except Exception as e:
+            logger.error(f"Failed to run benchmark: {e}")
+            logger.log_error_details(e)
+            return None
+    
+    def _parse_benchmark_results(self, run_dir: Path, logger: DebugLogger) -> Dict:
+        """Parse benchmark results from output files.
+        
+        Args:
+            run_dir: Directory containing results
+            logger: Logger instance
+            
+        Returns:
+            Results dictionary
+        """
+        results = {}
+
+        # Log directory contents for debugging
+        logger.debug(f"Checking for results in: {run_dir}")
+        if run_dir.exists():
+            files = list(run_dir.iterdir())
+            logger.debug(f"Files in run_dir: {[f.name for f in files]}")
+
+        # Look for CSV results file
+        csv_files = list(run_dir.glob("*.csv"))
+        if csv_files:
+            latest_csv = max(csv_files, key=lambda f: f.stat().st_mtime)
+            logger.debug(f"Found results CSV: {latest_csv}")
+
+            try:
+                import pandas as pd
+                df = pd.read_csv(latest_csv)
+                logger.debug(f"CSV has {len(df)} rows")
+                results["summary"] = {
+                    "successful_prompts": len(df),
+                    "total_prompts": len(df),
+                }
+
+                # Add performance metrics if available
+                if "latency" in df.columns:
+                    results["summary"]["avg_latency"] = df["latency"].mean()
+                if "tokens_per_second" in df.columns:
+                    results["summary"]["avg_throughput"] = df["tokens_per_second"].mean()
+
+            except Exception as e:
+                logger.warning(f"Could not parse CSV results: {e}")
+        else:
+            logger.warning(f"No CSV results found in {run_dir}")
+            # Return minimal results to indicate completion
+            results["summary"] = {
+                "successful_prompts": 0,
+                "total_prompts": self.num_prompts or 0,
+            }
+        
+        # Look for energy/emissions data
+        emissions_dir = run_dir / "emissions"
+        if emissions_dir.exists():
+            emissions_files = list(emissions_dir.glob("*.csv"))
+            if emissions_files:
+                latest_emissions = max(emissions_files, key=lambda f: f.stat().st_mtime)
+                try:
+                    import pandas as pd
+                    df = pd.read_csv(latest_emissions)
+                    results["energy"] = {
+                        "total_energy_kwh": df["energy_consumed"].sum() if "energy_consumed" in df.columns else 0,
+                        "emissions_kg_co2": df["emissions"].sum() if "emissions" in df.columns else 0,
+                    }
+                except Exception as e:
+                    logger.warning(f"Could not parse emissions data: {e}")
+        
+        return results
+
     def _cleanup_docker_containers(self, logger: DebugLogger) -> None:
         """Clean up any lingering Docker containers from benchmark runs.
 
@@ -412,12 +545,18 @@ class BatchRunner:
             start_time = time.time()
 
             if self.backend_type == "pytorch":
-                # Use docker for pytorch backend
-                logger.info("Using docker-based execution for PyTorch backend...")
-                results = self._run_via_docker(config, run_dir, logger)
+                # Check if we should use Docker or direct execution
+                use_docker = os.environ.get("USE_DOCKER", "true").lower() != "false"
+
+                if use_docker:
+                    logger.info("Using docker-based execution for PyTorch backend...")
+                    results = self._run_via_docker(config, run_dir, logger)
+                else:
+                    logger.info("Using non-docker execution for PyTorch backend...")
+                    results = self._run_non_docker(config, run_dir, logger)
 
                 if results is None:
-                    error_msg = "Docker execution failed"
+                    error_msg = "Benchmark execution failed"
                     logger.error(error_msg)
                     self.aggregator.add_failed_result(config, error_msg)
                     return False
