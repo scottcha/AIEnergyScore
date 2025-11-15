@@ -1,6 +1,13 @@
 #!/bin/bash
 set -e
 
+# Display container version
+if [ -f /VERSION ]; then
+    echo "============================================"
+    echo "AIEnergyScore Container Version: $(cat /VERSION)"
+    echo "============================================"
+fi
+
 RESULTS_DIR="/results"
 BENCHMARK_BACKEND="${BENCHMARK_BACKEND:-pytorch}"  # Default to pytorch (ai_energy_benchmarks)
 
