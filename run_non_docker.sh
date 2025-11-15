@@ -6,7 +6,7 @@
 #   Batch mode:  ./run_non_docker.sh --batch [BATCH_OPTIONS]
 #
 # Direct Mode Options:
-#   -n, --num-samples NUM       Number of prompts to test (default: 20)
+#   -n, --num-samples NUM       Number of prompts to test (default: 10)
 #      --num-prompts NUM        (alias for --num-samples)
 #   -b, --backend BACKEND       Backend type: pytorch, vllm, optimum (default: pytorch)
 #   -e, --endpoint URL          vLLM endpoint URL (default: http://localhost:8000/v1)
@@ -29,9 +29,12 @@
 #   VENV_DIR                    Virtual environment directory (default: .venv)
 #
 # Examples:
-#   # Direct execution
-#   ./run_non_docker.sh --config-name text_generation backend.model=openai/gpt-oss-20b
-#   ./run_non_docker.sh -n 100 -b vllm -e http://localhost:8021/v1 --config-name text_generation
+#   # Direct execution (default: 10 prompts)
+#   ./run_non_docker.sh backend.model=openai/gpt-oss-20b
+#
+#   # Custom number of prompts
+#   ./run_non_docker.sh -n 20 backend.model=openai/gpt-oss-20b
+#   ./run_non_docker.sh -n 100 -b vllm -e http://localhost:8021/v1
 #
 #   # Batch execution
 #   ./run_non_docker.sh --batch --model-name llama --reasoning-state "On"
@@ -53,7 +56,7 @@ NC='\033[0m' # No Color
 RESULTS_DIR="${RESULTS_DIR:-${SCRIPT_DIR}/results}"
 HF_CACHE="${HF_HOME:-${HOME}/.cache/huggingface}"
 VENV_DIR="${VENV_DIR:-${SCRIPT_DIR}/.venv}"
-NUM_SAMPLES=20
+NUM_SAMPLES=10
 BACKEND="${BENCHMARK_BACKEND:-pytorch}"
 ENDPOINT="${VLLM_ENDPOINT:-http://localhost:8000/v1}"
 BATCH_MODE=false
